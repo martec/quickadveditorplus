@@ -7,7 +7,7 @@
  * @Quick Advanced Editor Plus
  * @author  martec
  * @license http://www.gnu.org/copyleft/gpl.html GPLv3 license
- * @version 0.1-Alpha
+ * @version 0.4-Alpha
  * @Special Thanks: Aries-Belgium http://mods.mybb.com/view/quickquote
  */
 
@@ -16,6 +16,8 @@ if(!defined("IN_MYBB"))
 {
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
+
+define('QAEP_PLUGIN_VER', '0.4');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -26,7 +28,7 @@ function quickadveditorplus_info ()
 		"website"		 => "",
 		"author"		=> "martec",
 		"authorsite"	=> "",
-		"version"		 => "0.3-Alpha",
+		"version"		 => QAEP_PLUGIN_VER,
 		"guid"			   => "",
 		"compatibility" => "17*,18*"
 	);
@@ -99,7 +101,7 @@ function quickadveditorplus_activate()
 		"template"	  => "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme[\'editortheme\']}\" type=\"text/css\" media=\"all\" />
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js\"></script>
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js\"></script>
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/Thread.quickquote.js\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/Thread.quickquote.js?ver=\'.QAEP_PLUGIN_VER.\'\"></script>
 <script type=\"text/javascript\">
 if(\$(\'#clickable_smilies\').length) {
 	\$(\'#clickable_smilies\').closest(\'div\').hide();
