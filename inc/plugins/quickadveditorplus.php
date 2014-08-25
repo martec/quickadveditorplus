@@ -26,7 +26,7 @@ function quickadveditorplus_info ()
 		"website"		 => "",
 		"author"		=> "martec",
 		"authorsite"	=> "",
-		"version"		 => "0.1-Alpha",
+		"version"		 => "0.3-Alpha",
 		"guid"			   => "",
 		"compatibility" => "17*,18*"
 	);
@@ -220,37 +220,10 @@ if(typeof Thread !== \'undefined\')
 
 	$template2 = array(
 		"title"		   => "postbit_quickquote",
-		"template"	  => "<div style=\"display: none; float: right;\" id=\"qr_pid_{\$post[\'pid\']}\"><a href=\"#\">{\$lang->postbit_button_quote}</a></div>
+		"template"	  => "<button style=\"display: none; float: right;\" id=\"qr_pid_{\$post[\'pid\']}\">{\$lang->postbit_button_quote}</button>
 <script type=\"text/javascript\">
 	\$(document).ready(function() {
-		if (\$(\'#multiquote_{\$post[\'pid\']}\').length) {
-			\$(\'#pid_{\$post[\'pid\']}\').click(function (){
-				setTimeout(function() {
-					if (\$.trim(window.getSelection().toString())) {
-						\$(\"#qr_pid_{\$post[\'pid\']}\").show();
-					}
-					else {
-						\$(\"#qr_pid_{\$post[\'pid\']}\").hide();
-					}
-				},200);
-			})
-			\$(\"body:not(\'#pid_{\$post[\'pid\']}\')\").click(function (){
-				if (!\$.trim(window.getSelection().toString())){
-					\$(\"#qr_pid_{\$post[\'pid\']}\").hide();
-				}
-			})
-			\$(\"#qr_pid_{\$post[\'pid\']}\").click(function (e){
-				e.preventDefault();
-				setTimeout(function() {
-					if (\$.trim(window.getSelection().toString())) {
-						Thread.quickQuote({\$post[\'pid\']},\'{\$post[\'username\']}\',{\$post[\'dateline\']});
-					}
-					else {
-						\$(\"#qr_pid_{\$post[\'pid\']}\").hide();
-					}
-				},200);
-			})
-		}
+		quick_quote({\$post[\'pid\']},\'{\$post[\'username\']}\',{\$post[\'dateline\']});
 	});
 </script>",
 		"sid"		 => "-2"

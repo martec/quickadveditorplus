@@ -1,3 +1,62 @@
+// Credits: http://stackoverflow.com/a/8340432
+function isOrContains(node, container) {
+	while (node) {
+		if (node === container) {
+			return true;
+		}
+		node = node.parentNode;
+	}
+	return false;
+}
+
+function elementContainsSelection(el) {
+	var sel;
+	if ($.trim(window.getSelection().toString())) {
+		sel = window.getSelection();
+		if (sel.rangeCount > 0) {
+			for (var i = 0; i < sel.rangeCount; ++i) {
+				if (!isOrContains(sel.getRangeAt(i).commonAncestorContainer, el)) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+function quick_quote(pid, username, dateline) {
+	if ($('.new_reply_button').length) {
+		$('#pid_' + pid + '').mousemove(function (){
+			setTimeout(function() {
+				if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
+					$('#qr_pid_' + pid + '').show();
+				}
+				else {
+					$('#qr_pid_' + pid + '').hide();
+				}
+			},400);
+		})
+		$('body:not("#pid_' + pid + '")').click(function (){
+			if (!$.trim(window.getSelection().toString())){
+				$('#qr_pid_' + pid + '').hide();
+			}
+		})
+		$('#qr_pid_' + pid + '').click(function (e){
+			e.preventDefault();
+			setTimeout(function() {
+				if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
+					Thread.quickQuote(pid,'' + username + '',dateline);
+				}
+				else {
+					$('#qr_pid_' + pid + '').hide();
+				}
+			},200);
+		})
+	}
+}
+
+// Credits: http://mods.mybb.com/view/quickquote
 Thread.quickQuote = function(pid, username, dateline)
 {
 	if(window.getSelection().toString().trim()) {
