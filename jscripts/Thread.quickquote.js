@@ -27,15 +27,15 @@ function elementContainsSelection(el) {
 
 function quick_quote(pid, username, dateline) {
 	function quick() {
-			setTimeout(function() {
-				if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
-					$('#qr_pid_' + pid + '').show();
-				}
-				else {
-					$('#qr_pid_' + pid + '').hide();
-				}
-			},50);
-		}
+		setTimeout(function() {
+			if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
+				$('#qr_pid_' + pid + '').show();
+			}
+			else {
+				$('#qr_pid_' + pid + '').hide();
+			}
+		},50);
+	}
 	if ($('.new_reply_button').length && $('#quick_reply_form').length) {
 		$('#pid_' + pid + '').mousemove(quick).click(quick).find('blockquote').css({
 			"-webkit-touch-callout": "none",
