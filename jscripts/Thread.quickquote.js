@@ -26,8 +26,7 @@ function elementContainsSelection(el) {
 }
 
 function quick_quote(pid, username, dateline) {
-	if ($('.new_reply_button').length && $('#quick_reply_form').length) {
-		$('#pid_' + pid + '').mousemove(function (){
+	function quick() {
 			setTimeout(function() {
 				if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
 					$('#qr_pid_' + pid + '').show();
@@ -35,8 +34,17 @@ function quick_quote(pid, username, dateline) {
 				else {
 					$('#qr_pid_' + pid + '').hide();
 				}
-			},200);
-		})
+			},50);
+		}
+	if ($('.new_reply_button').length && $('#quick_reply_form').length) {
+		$('#pid_' + pid + '').mousemove(quick).click(quick).find('blockquote').css({
+			"-webkit-touch-callout": "none",
+			"-webkit-user-select": "none",
+			"-khtml-user-select": "none",
+			"-moz-user-select": "none",
+			"-ms-user-select": "none",
+			"user-select": "none" 
+		});
 		$('body:not("#pid_' + pid + '")').click(function (){
 			if (!$.trim(window.getSelection().toString())){
 				$('#qr_pid_' + pid + '').hide();
