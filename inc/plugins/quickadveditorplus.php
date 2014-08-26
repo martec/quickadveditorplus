@@ -101,7 +101,7 @@ function quickadveditorplus_activate()
 		"template"	  => "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme[\'editortheme\']}\" type=\"text/css\" media=\"all\" />
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js\"></script>
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js\"></script>
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/Thread.quickquote.js?ver=\'.QAEP_PLUGIN_VER.\'\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/Thread.quickquote.js?ver=".QAEP_PLUGIN_VER."\"></script>
 <script type=\"text/javascript\">
 if(\$(\'#clickable_smilies\').length) {
 	\$(\'#clickable_smilies\').closest(\'div\').hide();

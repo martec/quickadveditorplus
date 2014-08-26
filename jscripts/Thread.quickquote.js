@@ -26,7 +26,7 @@ function elementContainsSelection(el) {
 }
 
 function quick_quote(pid, username, dateline) {
-	if ($('.new_reply_button').length) {
+	if ($('.new_reply_button').length && $('#quick_reply_form').length) {
 		$('#pid_' + pid + '').mousemove(function (){
 			setTimeout(function() {
 				if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
@@ -35,7 +35,7 @@ function quick_quote(pid, username, dateline) {
 				else {
 					$('#qr_pid_' + pid + '').hide();
 				}
-			},400);
+			},200);
 		})
 		$('body:not("#pid_' + pid + '")').click(function (){
 			if (!$.trim(window.getSelection().toString())){
@@ -74,7 +74,7 @@ Thread.quickQuote = function(pid, username, dateline)
 Thread.updateMessageBox = function(message)
 {
 	if (typeof sceditor == 'undefined') {
-		if($('#clickable_smilies')) {
+		if($('#clickable_smilies').length) {
 			$('#clickable_smilies').closest('div').show();
 		}
 		$('#message').sceditor(opt_editor);
