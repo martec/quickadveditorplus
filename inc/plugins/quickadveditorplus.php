@@ -1,13 +1,13 @@
 <?php
 /**
- *  Quick Advanced Editor Plus
+ *	Quick Advanced Editor Plus
  *
- *  Advanced editor in quick reply with quick quote for MyBB 1.8
+ *	Advanced editor in quick reply with quick quote for MyBB 1.8
  *
  * @Quick Advanced Editor Plus
- * @author  martec
+ * @author	martec
  * @license http://www.gnu.org/copyleft/gpl.html GPLv3 license
- * @version 0.5-Alpha
+ * @version 0.6-Alpha
  * @Special Thanks: Aries-Belgium http://mods.mybb.com/view/quickquote
  */
 
@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '0.5');
+define('QAEP_PLUGIN_VER', '0.6');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -107,7 +107,6 @@ if(\$(\'#clickable_smilies\').length) {
 	\$(\'#clickable_smilies\').closest(\'div\').hide();
 }
 var partialmode = {\$mybb->settings[\'partialmode\']},
-quicksource = {\$quick_source},
 MYBB_SMILIES = {
 	{\$smilies_json}
 },
@@ -155,29 +154,7 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 	});
 }
 
-(\$.fn.on || \$.fn.live).call(\$(document), \'focus\', \'#message\', function () {
-	if (typeof sceditor == \'undefined\') {
-		\$(this).sceditor(opt_editor);
-		if(\$(\'#clickable_smilies\').length) {
-			\$(\'#clickable_smilies\').closest(\'div\').show();
-		}
-		MyBBEditor = \$(this).sceditor(\'instance\');
-			setTimeout(function() {
-				if (MyBBEditor) {
-					MyBBEditor.focus();
-				}
-				offset = \$(\'#message\').next().offset().top - 60;
-				setTimeout(function() {
-					\$(\'html, body\').animate({
-						scrollTop: offset
-					}, 700);
-				},200);
-			},100);
-		{\$sourcemode}
-	}
-});
-
-(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'a[id*=\"multiquote_link_\"]\', function () {
+function call_editor() {
 	if (typeof sceditor == \'undefined\') {
 		\$(\'#message\').sceditor(opt_editor);
 		if(\$(\'#clickable_smilies\').length) {
@@ -186,15 +163,33 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 		MyBBEditor = \$(\'#message\').sceditor(\'instance\');
 		{\$sourcemode}
 	}
+}
+
+function focus_editor() {
+	setTimeout(function() {
+		if (MyBBEditor) {
+			MyBBEditor.focus();
+		}
+		offset = \$(\'#message\').next().offset().top - 60;
+		setTimeout(function() {
+			\$(\'html, body\').animate({
+				scrollTop: offset
+			}, 700);
+		},200);
+	},100);
+}
+
+(\$.fn.on || \$.fn.live).call(\$(document), \'focus\', \'#message\', function () {
+	call_editor();
+	focus_editor();
+});
+
+(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'a[id*=\"multiquote_link_\"]\', function () {
+	call_editor();
 });
 
 if(Cookie.get(\'multiquote\')) {
-	\$(\'#message\').sceditor(opt_editor);
-	if(\$(\'#clickable_smilies\').length) {
-		\$(\'#clickable_smilies\').closest(\'div\').show();
-	}
-	MyBBEditor = \$(\'#message\').sceditor(\'instance\');
-	{\$sourcemode}
+	call_editor();
 };
 
 /**********************************
@@ -473,7 +468,6 @@ function mycode_inserter_quick($smilies = true)
 		}
 
 		$basic1 = $basic2 = $align = $font = $size = $color = $removeformat = $email = $link = $list = $code = $sourcemode = "";
-		$quick_source = "0";
 
 		if($mybb->settings['allowbasicmycode'] == 1)
 		{
@@ -529,7 +523,6 @@ function mycode_inserter_quick($smilies = true)
 		if($mybb->user['sourceeditor'] == 1)
 		{
 			$sourcemode = "MyBBEditor.sourceMode(true);";
-			$quick_source = "1";
 		}
 
 		eval("\$codeinsertquick = \"".$templates->get("codebutquick")."\";");

@@ -81,26 +81,11 @@ Thread.quickQuote = function(pid, username, dateline)
 
 Thread.updateMessageBox = function(message)
 {
-	if (typeof sceditor == 'undefined') {
-		if($('#clickable_smilies').length) {
-			$('#clickable_smilies').closest('div').show();
-		}
-		$('#message').sceditor(opt_editor);
-		MyBBEditor = $('#message').sceditor('instance');
-		if (quicksource) {
-			MyBBEditor.sourceMode(true);
-		}
-	}
+	call_editor();
 	setTimeout(function() {
 		MyBBEditor.insert(message);
 	},200);
-	MyBBEditor.focus();
-	offset = $('#message').next().offset().top - 60;
-	setTimeout(function() {
-		$('html, body').animate({
-			scrollTop: offset
-		}, 700);
-	},200);
+	focus_editor();
 }
 
 Thread.RGBtoHex = function (R,G,B) {return Thread.toHex(R)+Thread.toHex(G)+Thread.toHex(B)}
