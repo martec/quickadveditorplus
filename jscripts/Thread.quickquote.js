@@ -37,14 +37,7 @@ function quick_quote(pid, username, dateline) {
 		},50);
 	}
 	if ($('.new_reply_button').length && $('#quick_reply_form').length) {
-		$('#pid_' + pid + '').mousemove(quick).click(quick).find('blockquote').css({
-			"-webkit-touch-callout": "none",
-			"-webkit-user-select": "none",
-			"-khtml-user-select": "none",
-			"-moz-user-select": "none",
-			"-ms-user-select": "none",
-			"user-select": "none" 
-		});
+		$('#pid_' + pid + '').mousemove(quick).click(quick).find('blockquote');
 		$('body:not("#pid_' + pid + '")').click(function (){
 			if (!$.trim(window.getSelection().toString())){
 				$('#qr_pid_' + pid + '').hide();
@@ -81,11 +74,15 @@ Thread.quickQuote = function(pid, username, dateline)
 
 Thread.updateMessageBox = function(message)
 {
-	call_editor();
+	$('#message').sceditor('instance').insert(message);
 	setTimeout(function() {
-		MyBBEditor.insert(message);
-	},200);
-	focus_editor();
+		offset = $('#message').next().offset().top - 60;
+		setTimeout(function() {
+			$('html, body').animate({
+				scrollTop: offset
+			}, 700);
+		},200);
+	},100);	
 }
 
 Thread.RGBtoHex = function (R,G,B) {return Thread.toHex(R)+Thread.toHex(G)+Thread.toHex(B)}
