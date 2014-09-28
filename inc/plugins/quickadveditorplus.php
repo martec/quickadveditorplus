@@ -7,7 +7,7 @@
  * @Quick Advanced Editor Plus
  * @author	martec
  * @license http://www.gnu.org/copyleft/gpl.html GPLv3 license
- * @version 1.3
+ * @version 1.4
  * @Special Thanks: Aries-Belgium http://mods.mybb.com/view/quickquote
  */
 
@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '1.3');
+define('QAEP_PLUGIN_VER', '1.4');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -231,8 +231,8 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 	\$(\'#message\').height(\'280px\');
 	var link_can = document.querySelector(\"link[rel=\'canonical\']\");
 	\$(\'#message\').sceditor(opt_editor);
-	{\$sourcemode}
 	MyBBEditor = $(\'#message\').sceditor(\'instance\');
+	{\$sourcemode}
 	if({\$mybb->settings[\'quickadveditorplus_autosave\']}!=0) {
 		MyBBEditor.blur(function(e) {
 			if (MyBBEditor.val()) {
