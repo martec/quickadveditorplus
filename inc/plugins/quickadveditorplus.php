@@ -234,14 +234,6 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 	MyBBEditor = $(\'#message\').sceditor(\'instance\');
 	{\$sourcemode}
 	if({\$mybb->settings[\'quickadveditorplus_autosave\']}!=0) {
-		MyBBEditor.blur(function(e) {
-			if (MyBBEditor.val()) {
-				localStorage.setItem(link_can + \'quickreply\', MyBBEditor.val())
-			}
-			else {
-				localStorage.removeItem(link_can + \'quickreply\');
-			}
-		});
 		setInterval(function() {
 			if (MyBBEditor) {
 				if (MyBBEditor.val() != localStorage.getItem(link_can + \'quickreply\')) {
@@ -273,6 +265,14 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 				MyBBEditor.val(restitem);
 			}
 		},600);
+		MyBBEditor.blur(function(e) {
+			if (MyBBEditor.val()) {
+				localStorage.setItem(link_can + \'quickreply\', MyBBEditor.val())
+			}
+			else {
+				localStorage.removeItem(link_can + \'quickreply\');
+			}
+		});
 	}
 });
 
