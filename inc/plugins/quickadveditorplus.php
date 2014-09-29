@@ -216,7 +216,7 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 				}
 			},200);
 			if(\'{\$sourcemode}\' != \'\') {
-				\$(\'#quickedit_\'+pid).sceditor(\'instance\').sourceMode(true);
+				\$(\'textarea[name*=\"value\"]\').sceditor(\'instance\').sourceMode(true);
 			}
 		},400);
 	});
