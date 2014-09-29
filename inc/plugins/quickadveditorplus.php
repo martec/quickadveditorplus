@@ -7,7 +7,7 @@
  * @Quick Advanced Editor Plus
  * @author	martec
  * @license http://www.gnu.org/copyleft/gpl.html GPLv3 license
- * @version 1.5
+ * @version 1.6
  * @Special Thanks: Aries-Belgium http://mods.mybb.com/view/quickquote
  */
 
@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '1.5');
+define('QAEP_PLUGIN_VER', '1.6');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -215,7 +215,9 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 					$(\".jGrowl-notification:last-child\").remove();
 				}
 			},200);
-			\$(\'#quickedit_\'+pid).sceditor(\'instance\').sourceMode(true);
+			if(\'{\$sourcemode}\' != \'\') {
+				\$(\'#quickedit_\'+pid).sceditor(\'instance\').sourceMode(true);
+			}
 		},400);
 	});
 }
@@ -402,6 +404,31 @@ function quickadveditorplus_deactivate()
 	{$post[\'iplogged\']}') . '#i',
 		'{$post[\'iplogged\']}'
 	);
+}
+
+$plugins->add_hook('global_start', 'advedtplus_cache_codebutquick');
+function advedtplus_cache_codebutquick()
+{
+	global $templatelist, $mybb;
+
+	if (isset($templatelist)) {
+		$templatelist .= ',';
+	}
+
+	if (THIS_SCRIPT == 'showthread.php') {
+		if($mybb->settings['quickadveditorplus_smile'] != 0 && $mybb->settings['quickadveditorplus_quickquote'] != 1) {
+			$templatelist .= 'codebutquick,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';	
+		}
+		elseif($mybb->settings['quickadveditorplus_quickquote'] != 0 && $mybb->settings['quickadveditorplus_smile'] != 1) {
+			$templatelist .= 'codebutquick,postbit_quickquote';	
+		}
+		elseif($mybb->settings['quickadveditorplus_quickquote'] != 0 && $mybb->settings['quickadveditorplus_smile'] != 0) {
+			$templatelist .= 'codebutquick,postbit_quickquote,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';	
+		}
+		else {
+			$templatelist .= 'codebutquick';		
+		}
+	}
 }
 
 function mycode_inserter_quick($smilies = true)
