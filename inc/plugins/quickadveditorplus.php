@@ -51,26 +51,26 @@ function quickadveditorplus_install()
 		'disporder'	=> $dorder,
 		'isdefault'	=> '0'
 	));
-	
+
 	$db->insert_query('settings', array(
-		'name'		=> 'quickadveditorplus_qurp_heigh', 
+		'name'		=> 'quickadveditorplus_qurp_heigh',
 		'title'		=> $lang->quickadveditorplus_qurp_heigh_title,
 		'description'	=> $lang->quickadveditorplus_qurp_heigh_desc,
 		'optionscode'	=> 'text',
 		'value'		=> '280',
 		'disporder'	=> '1',
 		'gid'		=> $groupid
-	));	
-	
+	));
+
 	$db->insert_query('settings', array(
-		'name'		=> 'quickadveditorplus_qued_heigh', 
+		'name'		=> 'quickadveditorplus_qued_heigh',
 		'title'		=> $lang->quickadveditorplus_qued_heigh_title,
 		'description'	=> $lang->quickadveditorplus_qued_heigh_desc,
 		'optionscode'	=> 'text',
 		'value'		=> '300',
 		'disporder'	=> '2',
 		'gid'		=> $groupid
-	));	
+	));
 
 	$db->insert_query('settings', array(
 		'name'		=> 'quickadveditorplus_smile',
@@ -131,7 +131,7 @@ function quickadveditorplus_install()
 		'disporder'	=> '8',
 		'gid'		=> $groupid
 	));
-	
+
 	$db->insert_query('settings', array(
 		'name'		=> 'quickadveditorplus_restore_lang',
 		'title'		=> $lang->quickadveditorplus_restor_title,
@@ -140,7 +140,7 @@ function quickadveditorplus_install()
 		'value'		=> $lang->quickadveditorplus_restor_default,
 		'disporder'	=> '9',
 		'gid'		=> $groupid
-	));	
+	));
 
 	rebuild_settings();
 }
@@ -287,8 +287,8 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 					\'</a>\'
 				];
 
-				\$(restorebut.join(\'\')).appendTo(\'.sceditor-group:last\');	
-			}			
+				\$(restorebut.join(\'\')).appendTo(\'.sceditor-group:last\');
+			}
 		},600);
 		MyBBEditor.blur(function(e) {
 			if (MyBBEditor.val()) {
@@ -326,7 +326,7 @@ if(typeof Thread !== \'undefined\')
 		"sid"		 => "-1"
 	);
 	$db->insert_query("templates", $template);
-	
+
 	$template2 = array(
 		"tid"		 => NULL,
 		"title"		   => "codebutquick_pm",
@@ -404,8 +404,8 @@ opt_editor = {
 					\'</a>\'
 				];
 
-				\$(restorebut.join(\'\')).appendTo(\'.sceditor-group:last\');	
-			}			
+				\$(restorebut.join(\'\')).appendTo(\'.sceditor-group:last\');
+			}
 		},600);
 		MyBBEditor.blur(function(e) {
 			if (MyBBEditor.val()) {
@@ -420,7 +420,7 @@ opt_editor = {
 </script>",
 		"sid"		 => "-1"
 	);
-	$db->insert_query("templates", $template2);	
+	$db->insert_query("templates", $template2);
 
 	$template3 = array(
 		"title"		   => "postbit_quickquote",
@@ -439,24 +439,24 @@ opt_editor = {
 		'#' . preg_quote('</textarea>') . '#i',
 		'</textarea>{$codebutquick}'
 	);
-	
+
 	find_replace_templatesets(
 		'private_quickreply',
 		'#' . preg_quote('</textarea>') . '#i',
 		'</textarea>{$codebutquick}'
-	);	
+	);
 
 	find_replace_templatesets(
 		'showthread_quickreply',
 		'#' . preg_quote('<span class="smalltext">{$lang->message_note}<br />') . '#i',
 		'<span class="smalltext">{$lang->message_note}<br />{$smilieinserter}'
 	);
-	
+
 	find_replace_templatesets(
 		'private_quickreply',
 		'#' . preg_quote('<span class="smalltext">{$lang->message_note}<br />') . '#i',
 		'<span class="smalltext">{$lang->message_note}<br />{$smilieinserter}'
-	);	
+	);
 
 	find_replace_templatesets(
 		'showthread',
@@ -493,7 +493,7 @@ function quickadveditorplus_deactivate()
 	include_once MYBB_ROOT."inc/adminfunctions_templates.php";
 
 	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title='codebutquick'");
-	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title='codebutquick_pm'");	
+	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title='codebutquick_pm'");
 	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title='postbit_quickquote'");
 
 	find_replace_templatesets(
@@ -501,24 +501,24 @@ function quickadveditorplus_deactivate()
 		'#' . preg_quote('</textarea>{$codebutquick}') . '#i',
 		'</textarea>'
 	);
-	
+
 	find_replace_templatesets(
 		'private_quickreply',
 		'#' . preg_quote('</textarea>{$codebutquick}') . '#i',
 		'</textarea>'
-	);	
+	);
 
 	find_replace_templatesets(
 		'showthread_quickreply',
 		'#' . preg_quote('<span class="smalltext">{$lang->message_note}<br />{$smilieinserter}') . '#i',
 		'<span class="smalltext">{$lang->message_note}<br />'
 	);
-	
+
 	find_replace_templatesets(
 		'private_quickreply',
 		'#' . preg_quote('<span class="smalltext">{$lang->message_note}<br />{$smilieinserter}') . '#i',
 		'<span class="smalltext">{$lang->message_note}<br />'
-	);	
+	);
 
 	find_replace_templatesets(
 		'showthread',
@@ -560,26 +560,26 @@ function advedtplus_cache_codebutquick()
 
 	if (THIS_SCRIPT == 'showthread.php') {
 		if($mybb->settings['quickadveditorplus_smile'] != 0 && $mybb->settings['quickadveditorplus_quickquote'] != 1) {
-			$templatelist .= 'codebutquick,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';	
+			$templatelist .= 'codebutquick,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';
 		}
 		elseif($mybb->settings['quickadveditorplus_quickquote'] != 0 && $mybb->settings['quickadveditorplus_smile'] != 1) {
-			$templatelist .= 'codebutquick,postbit_quickquote';	
+			$templatelist .= 'codebutquick,postbit_quickquote';
 		}
 		elseif($mybb->settings['quickadveditorplus_quickquote'] != 0 && $mybb->settings['quickadveditorplus_smile'] != 0) {
-			$templatelist .= 'codebutquick,postbit_quickquote,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';	
+			$templatelist .= 'codebutquick,postbit_quickquote,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';
 		}
 		else {
-			$templatelist .= 'codebutquick';		
+			$templatelist .= 'codebutquick';
 		}
 	}
 	if (THIS_SCRIPT == 'private.php') {
 		if($mybb->settings['quickadveditorplus_smile'] != 0) {
-			$templatelist .= 'codebutquick_pm,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';	
+			$templatelist .= 'codebutquick_pm,smilieinsert,smilieinsert_smilie,smilieinsert_getmore';
 		}
 		else {
-			$templatelist .= 'codebutquick_pm';		
+			$templatelist .= 'codebutquick_pm';
 		}
-	}	
+	}
 }
 
 function mycode_inserter_quick($smilies = true)
@@ -808,12 +808,12 @@ function mycode_inserter_quick($smilies = true)
 		{
 			$quickquote = "<script type=\"text/javascript\" src=\"".$mybb->asset_url."/jscripts/Thread.quickquote.js?ver=".QAEP_PLUGIN_VER."\"></script>";
 		}
-		
+
 		if (!strpos($_SERVER['PHP_SELF'],'private.php')) {
 			eval("\$codeinsertquick = \"".$templates->get("codebutquick")."\";");
 		}
 		else {
-			eval("\$codeinsertquick = \"".$templates->get("codebutquick_pm")."\";");		
+			eval("\$codeinsertquick = \"".$templates->get("codebutquick_pm")."\";");
 		}
 	}
 
@@ -838,15 +838,12 @@ function codebuttonsquick () {
 $plugins->add_hook("private_start", "codebuttonsquick_pm");
 function codebuttonsquick_pm () {
 
-	global $smilieinserter, $codebutquick, $codebutquickedt, $mybb;
+	global $smilieinserter, $codebutquick, $mybb;
 
 	$codebutquick = mycode_inserter_quick();
-	$smilieinserter = $codebutquickedt = '';
+	$smilieinserter = '';
 	if($mybb->settings['quickadveditorplus_smile'] != 0) {
 		$smilieinserter = build_clickable_smilies();
-	}
-	if($mybb->settings['quickreply'] == 0) {
-		$codebutquickedt = mycode_inserter_quick();
 	}
 }
 
