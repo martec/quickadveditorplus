@@ -7,7 +7,7 @@
  * @Quick Advanced Editor Plus
  * @author	martec
  * @license http://www.gnu.org/copyleft/gpl.html GPLv3 license
- * @version 1.8
+ * @version 1.8.1
  * @Special Thanks: Aries-Belgium http://mods.mybb.com/view/quickquote
  */
 
@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '1.8');
+define('QAEP_PLUGIN_VER', '1.8.1');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -217,7 +217,7 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 		\$.jGrowl(\'<img src=\"images/spinner_big.gif\" />\');
 		ed_id = \$(this).attr(\'id\');
 		var pid = ed_id.replace( /[^0-9]/g, \'\');
-		\$(\'#quickedit_\'+pid).height({\$mybb->settings[\'quickadveditorplus_qued_heigh\']}+\'px\');
+		\$(\'#quickedit_\'+pid).height(\'{\$mybb->settings[\'quickadveditorplus_qued_heigh\']}px\');
 		setTimeout(function() {
 			\$(\'#quickedit_\'+pid).sceditor(opt_editor);
 			if (\$(\'#quickedit_\'+pid).sceditor(\'instance\')) {
@@ -253,7 +253,7 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 });
 
 \$(document).ready(function() {
-	\$(\'#message\').height({\$mybb->settings[\'quickadveditorplus_qurp_heigh\']}+\'px\');
+	\$(\'#message\').height(\'{\$mybb->settings[\'quickadveditorplus_qurp_heigh\']}px\');
 	var link_can = document.querySelector(\"link[rel=\'canonical\']\");
 	\$(\'#message\').sceditor(opt_editor);
 	MyBBEditor = $(\'#message\').sceditor(\'instance\');
@@ -371,7 +371,7 @@ opt_editor = {
 });
 
 \$(document).ready(function() {
-	\$(\'#message\').height({\$mybb->settings[\'quickadveditorplus_qurp_heigh\']}+\'px\');
+	\$(\'#message\').height(\'{\$mybb->settings[\'quickadveditorplus_qurp_heigh\']}px\');
 	\$(\'#message\').sceditor(opt_editor);
 	MyBBEditor = $(\'#message\').sceditor(\'instance\');
 	{\$sourcemode}
@@ -847,7 +847,7 @@ function codebuttonsquick_pm () {
 	}
 }
 
-$plugins->add_hook('postbit', 'quickquote_postbit');
+$plugins->add_hook('postbit', 'qaep_quickquote_postbit');
 
 function canonical($link)
 {
@@ -860,7 +860,7 @@ function canonical($link)
     }
 }
 
-function quickquote_postbit(&$post)
+function qaep_quickquote_postbit(&$post)
 {
 	global $templates, $lang, $mybb, $postcounter, $tid, $page;
 
