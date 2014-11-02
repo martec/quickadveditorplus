@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '1.8.1');
+define('QAEP_PLUGIN_VER', '1.9.0');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -111,6 +111,16 @@ function quickadveditorplus_install()
 		'disporder'	=> '6',
 		'gid'		=> $groupid
 	));
+	
+	$db->insert_query('settings', array(
+		'name'		=> 'quickadveditorplus_savetime',
+		'title'		=> $lang->quickadveditorplus_savetime_title,
+		'description'	=> $lang->quickadveditorplus_savetime_desc,
+		'optionscode'	=> 'text',
+		'value'		=> '15',
+		'disporder'	=> '7',
+		'gid'		=> $groupid
+	));
 
 	$db->insert_query('settings', array(
 		'name'		=> 'quickadveditorplus_canonicallink',
@@ -118,7 +128,7 @@ function quickadveditorplus_install()
 		'description'	=> $lang->quickadveditorplus_canonical_desc,
 		'optionscode'	=> 'onoff',
 		'value'		=> '1',
-		'disporder'	=> '7',
+		'disporder'	=> '8',
 		'gid'		=> $groupid
 	));
 
@@ -128,7 +138,7 @@ function quickadveditorplus_install()
 		'description'	=> $lang->quickadveditorplus_save_desc,
 		'optionscode'	=> 'text',
 		'value'		=> $lang->quickadveditorplus_save_default,
-		'disporder'	=> '8',
+		'disporder'	=> '9',
 		'gid'		=> $groupid
 	));
 
@@ -138,7 +148,7 @@ function quickadveditorplus_install()
 		'description'	=> $lang->quickadveditorplus_restor_desc,
 		'optionscode'	=> 'text',
 		'value'		=> $lang->quickadveditorplus_restor_default,
-		'disporder'	=> '9',
+		'disporder'	=> '10',
 		'gid'		=> $groupid
 	));
 
@@ -163,6 +173,7 @@ function quickadveditorplus_uninstall()
 	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_qedit')");
 	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_quickquote')");
 	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_autosave')");
+	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_savetime')");	
 	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_canonicallink')");
 	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_save_lang')");
 	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_restor_lang')");
@@ -188,7 +199,7 @@ MYBB_SMILIES = {
 },
 opt_editor = {
 	plugins: \"bbcode\",
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.mybb.css\",
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme[\'editortheme\']}\",
 	rtl: {\$lang->settings[\'rtl\']},
 	locale: \"mybblang\",
 	enablePasteFiltering: true,
@@ -276,7 +287,7 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 					}
 				}
 			}
-		},15000);
+		},{\$mybb->settings[\'quickadveditorplus_savetime\']}*1000);
 
 		setTimeout(function() {
 			restitem = localStorage.getItem(link_can + \'quickreply\');
@@ -337,7 +348,7 @@ if(typeof Thread !== \'undefined\')
 var partialmode = {\$mybb->settings[\'partialmode\']},
 opt_editor = {
 	plugins: \"bbcode\",
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.mybb.css\",
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme[\'editortheme\']}\",
 	rtl: {\$lang->settings[\'rtl\']},
 	locale: \"mybblang\",
 	enablePasteFiltering: true,
@@ -393,7 +404,7 @@ opt_editor = {
 					}
 				}
 			}
-		},15000);
+		},{\$mybb->settings[\'quickadveditorplus_savetime\']}*1000);
 
 		setTimeout(function() {
 			restitem = localStorage.getItem(location.href + \'quickreply\');
