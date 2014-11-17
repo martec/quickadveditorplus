@@ -7,7 +7,7 @@
  * @Quick Advanced Editor Plus
  * @author	martec
  * @license http://www.gnu.org/copyleft/gpl.html GPLv3 license
- * @version 2.0.0
+ * @version 2.1.0
  * @Special Thanks: Aries-Belgium http://mods.mybb.com/view/quickquote
  */
 
@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '2.0.0');
+define('QAEP_PLUGIN_VER', '2.1.0');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -51,9 +51,15 @@ EOF;
 
 function quickadveditorplus_install()
 {
-	global $db, $lang;
+	global $db, $lang, $mybb;
 
 	$lang->load('config_quickadveditorplus');
+
+    if($mybb->version_code < 1801)
+    {
+        flash_message("{$lang->quickadveditorplus_mybbver_req}", "error");
+        admin_redirect("index.php?module=config-plugins");
+    }	
 
 	$groupid = $db->insert_query('settinggroups', array(
 		'name'		=> 'quickadveditorplus',
@@ -63,7 +69,7 @@ function quickadveditorplus_install()
 		'isdefault'	=> '0'
 	));
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_qurp_heigh',
 		'title'		=> $lang->quickadveditorplus_qurp_heigh_title,
 		'description'	=> $lang->quickadveditorplus_qurp_heigh_desc,
@@ -71,9 +77,9 @@ function quickadveditorplus_install()
 		'value'		=> '280',
 		'disporder'	=> '1',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_qued_heigh',
 		'title'		=> $lang->quickadveditorplus_qued_heigh_title,
 		'description'	=> $lang->quickadveditorplus_qued_heigh_desc,
@@ -81,9 +87,9 @@ function quickadveditorplus_install()
 		'value'		=> '300',
 		'disporder'	=> '2',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_smile',
 		'title'		=> $lang->quickadveditorplus_smile_title,
 		'description'	=> $lang->quickadveditorplus_smile_desc,
@@ -91,9 +97,9 @@ function quickadveditorplus_install()
 		'value'		=> '0',
 		'disporder'	=> '3',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_qedit',
 		'title'		=> $lang->quickadveditorplus_qedit_title,
 		'description'	=> $lang->quickadveditorplus_qedit_desc,
@@ -101,9 +107,9 @@ function quickadveditorplus_install()
 		'value'		=> '1',
 		'disporder'	=> '4',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_quickquote',
 		'title'		=> $lang->quickadveditorplus_quickquote_title,
 		'description'	=> $lang->quickadveditorplus_quickquote_desc,
@@ -111,9 +117,9 @@ function quickadveditorplus_install()
 		'value'		=> '1',
 		'disporder'	=> '5',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_autosave',
 		'title'		=> $lang->quickadveditorplus_autosave_title,
 		'description'	=> $lang->quickadveditorplus_autosave_desc,
@@ -121,9 +127,9 @@ function quickadveditorplus_install()
 		'value'		=> '1',
 		'disporder'	=> '6',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_saveamount',
 		'title'		=> $lang->quickadveditorplus_saveamount_title,
 		'description'	=> $lang->quickadveditorplus_saveamount_desc,
@@ -131,9 +137,9 @@ function quickadveditorplus_install()
 		'value'		=> '20',
 		'disporder'	=> '7',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_savetime',
 		'title'		=> $lang->quickadveditorplus_savetime_title,
 		'description'	=> $lang->quickadveditorplus_savetime_desc,
@@ -141,9 +147,9 @@ function quickadveditorplus_install()
 		'value'		=> '15',
 		'disporder'	=> '8',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_canonicallink',
 		'title'		=> $lang->quickadveditorplus_canonical_title,
 		'description'	=> $lang->quickadveditorplus_canonical_desc,
@@ -151,9 +157,9 @@ function quickadveditorplus_install()
 		'value'		=> '1',
 		'disporder'	=> '9',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_save_lang',
 		'title'		=> $lang->quickadveditorplus_save_title,
 		'description'	=> $lang->quickadveditorplus_save_desc,
@@ -161,9 +167,9 @@ function quickadveditorplus_install()
 		'value'		=> $lang->quickadveditorplus_save_default,
 		'disporder'	=> '10',
 		'gid'		=> $groupid
-	));
+	);
 
-	$db->insert_query('settings', array(
+	$new_setting[] = array(
 		'name'		=> 'quickadveditorplus_restore_lang',
 		'title'		=> $lang->quickadveditorplus_restor_title,
 		'description'	=> $lang->quickadveditorplus_restor_desc,
@@ -171,9 +177,10 @@ function quickadveditorplus_install()
 		'value'		=> $lang->quickadveditorplus_restor_default,
 		'disporder'	=> '11',
 		'gid'		=> $groupid
-	));
+	);
 
-	rebuild_settings();
+    $db->insert_query_multiple("settings", $new_setting);
+    rebuild_settings();
 }
 
 function quickadveditorplus_is_installed()
@@ -197,24 +204,22 @@ function quickadveditorplus_uninstall()
 function quickadveditorplus_activate()
 {
 	global $db;
+
 	include_once MYBB_ROOT.'inc/adminfunctions_templates.php';
 
-	$template = array(
-		"tid"		 => NULL,
-		"title"		   => "codebutquick",
-		"template"	  => "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme[\'editortheme\']}\" type=\"text/css\" media=\"all\" />
+	$new_template_global['codebutquick'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js\"></script>
 {\$quickquote}
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js\"></script>
 <script type=\"text/javascript\">
-var partialmode = {\$mybb->settings[\'partialmode\']},
+var partialmode = {\$mybb->settings['partialmode']},
 MYBB_SMILIES = {
 	{\$smilies_json}
 },
 opt_editor = {
 	plugins: \"bbcode\",
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme[\'editortheme\']}\",
-	rtl: {\$lang->settings[\'rtl\']},
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme['editortheme']}\",
+	rtl: {\$lang->settings['rtl']},
 	locale: \"mybblang\",
 	enablePasteFiltering: true,
 	emoticonsEnabled: {\$emoticons_enabled},
@@ -239,26 +244,26 @@ opt_editor = {
 
 function qae_as() {
 	if (MyBBEditor) {
-		sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
-		link_can = document.querySelector(\"link[rel=\'canonical\']\").href;
+		sc_asd = JSON.parse(localStorage.getItem('sc_as'));
+		link_can = document.querySelector(\"link[rel='canonical']\").href;
 		if (!sc_asd) {
 			sc_asd = {};
 		}
 		if (MyBBEditor.val() != sc_asd[link_can]) {
 			if (\$.trim(MyBBEditor.val())) {
-				if(!\$(\'#autosave\').length) {
-					$(\'<div/>\', { id: \'autosave\', class: \'bottom-right\' }).appendTo(\'body\');
+				if(!\$('#autosave').length) {
+					$('<div/>', { id: 'autosave', class: 'bottom-right' }).appendTo('body');
 				}
 				setTimeout(function() {
-					\$(\'#autosave\').jGrowl(\'{\$mybb->settings[\'quickadveditorplus_save_lang\']}\', { life: 500 });
+					\$('#autosave').jGrowl('{\$mybb->settings['quickadveditorplus_save_lang']}', { life: 500 });
 				},200);
 				sc_asd[link_can] = MyBBEditor.val();
-				localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 			}
 			else {
 				if (sc_asd[link_can]) {
 					delete sc_asd[link_can];
-					localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+					localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 				}
 			}
 		}
@@ -266,95 +271,95 @@ function qae_as() {
 }
 
 function qae_ac() {
-	sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
-	link_can = document.querySelector(\"link[rel=\'canonical\']\").href;
+	sc_asd = JSON.parse(localStorage.getItem('sc_as'));
+	link_can = document.querySelector(\"link[rel='canonical']\").href;
 	if (!sc_asd) {
 		sc_asd = {};
 	}
 	if (sc_asd[link_can]) {
 		delete sc_asd[link_can];
-		localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+		localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 	}
 }
 
 function qae_ar() {
-	sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+	sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 	if (!sc_asd) {
 		sc_asd = {};
 	}
-	if(Object.keys(sc_asd).length > {\$mybb->settings[\'quickadveditorplus_saveamount\']}) {
+	if(Object.keys(sc_asd).length > {\$mybb->settings['quickadveditorplus_saveamount']}) {
 		delete sc_asd[Object.keys(sc_asd)[0]];
-		localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+		localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 	}
 }
 
-if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
-	(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'.quick_edit_button\', function () {
-		\$.jGrowl(\'<img src=\"images/spinner_big.gif\" />\');
-		ed_id = \$(this).attr(\'id\');
-		var pid = ed_id.replace( /[^0-9]/g, \'\');
-		\$(\'#quickedit_\'+pid).height(\'{\$mybb->settings[\'quickadveditorplus_qued_heigh\']}px\');
+if({\$mybb->settings['quickadveditorplus_qedit']}!=0) {
+	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '.quick_edit_button', function () {
+		\$.jGrowl('<img src=\"images/spinner_big.gif\" />');
+		ed_id = \$(this).attr('id');
+		var pid = ed_id.replace( /[^0-9]/g, '');
+		\$('#quickedit_'+pid).height('{\$mybb->settings['quickadveditorplus_qued_heigh']}px');
 		setTimeout(function() {
-			\$(\'#quickedit_\'+pid).sceditor(opt_editor);
-			if (\$(\'#quickedit_\'+pid).sceditor(\'instance\')) {
-				\$(\'#quickedit_\'+pid).sceditor(\'instance\').focus();
-				\$(\'#quickedit_\'+pid).next().css( \"z-index\", \"5\" );
+			\$('#quickedit_'+pid).sceditor(opt_editor);
+			if (\$('#quickedit_'+pid).sceditor('instance')) {
+				\$('#quickedit_'+pid).sceditor('instance').focus();
+				\$('#quickedit_'+pid).next().css( \"z-index\", \"5\" );
 			}
-			offset = \$(\'#quickedit_\'+pid).next().offset().top - 60;
+			offset = \$('#quickedit_'+pid).next().offset().top - 60;
 			setTimeout(function() {
-				\$(\'html, body\').animate({
+				\$('html, body').animate({
 					scrollTop: offset
 				}, 700);
 				setTimeout(function() {
-					\$(\'#pid_\'+pid).find(\'button[type=\"submit\"]\').attr( \'id\', \'quicksub_\'+pid );
+					\$('#pid_'+pid).find('button[type=\"submit\"]').attr( 'id', 'quicksub_'+pid );
 				},200);
 				if($(\".jGrowl-notification:last-child\").length) {
 					$(\".jGrowl-notification:last-child\").remove();
 				}
 			},200);
-			if(\'{\$sourcemode}\' != \'\') {
-				\$(\'textarea[name*=\"value\"]\').sceditor(\'instance\').sourceMode(true);
+			if('{\$sourcemode}' != '') {
+				\$('textarea[name*=\"value\"]').sceditor('instance').sourceMode(true);
 			}
 		},400);
 	});
 }
 
-(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'button[id*=\"quicksub_\"]\', function () {
-	ed_id = \$(this).attr(\'id\');
-	pid = ed_id.replace( /[^0-9]/g, \'\');
-	\$(\'#quickedit_\'+pid).sceditor(\'instance\').updateOriginal();
+(\$.fn.on || \$.fn.live).call(\$(document), 'click', 'button[id*=\"quicksub_\"]', function () {
+	ed_id = \$(this).attr('id');
+	pid = ed_id.replace( /[^0-9]/g, '');
+	\$('#quickedit_'+pid).sceditor('instance').updateOriginal();
 });
 
-(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'input[accesskey*=\"s\"]\', function () {
+(\$.fn.on || \$.fn.live).call(\$(document), 'click', 'input[accesskey*=\"s\"]', function () {
 	qae_ac();
 });
 
 \$(document).ready(function() {
-	\$(\'#message\').height(\'{\$mybb->settings[\'quickadveditorplus_qurp_heigh\']}px\');
-	var link_can = document.querySelector(\"link[rel=\'canonical\']\").href;
-	\$(\'#message\').sceditor(opt_editor);
-	MyBBEditor = $(\'#message\').sceditor(\'instance\');
+	\$('#message').height('{\$mybb->settings['quickadveditorplus_qurp_heigh']}px');
+	var link_can = document.querySelector(\"link[rel='canonical']\").href;
+	\$('#message').sceditor(opt_editor);
+	MyBBEditor = $('#message').sceditor('instance');
 	{\$sourcemode}
-	if({\$mybb->settings[\'quickadveditorplus_autosave\']}!=0) {
+	if({\$mybb->settings['quickadveditorplus_autosave']}!=0) {
 		setInterval(function() {
 			qae_as();
 			qae_ar();
-		},{\$mybb->settings[\'quickadveditorplus_savetime\']}*1000);
+		},{\$mybb->settings['quickadveditorplus_savetime']}*1000);
 
 		setTimeout(function() {
-			sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+			sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 			restitem = \"\";
 			if (sc_asd) {
 				restitem = sc_asd[link_can];
 			}
 			if (restitem) {
 				var restorebut = [
-					\'<a class=\"sceditor-button\" title=\"{\$mybb->settings[\'quickadveditorplus_restore_lang\']}\" onclick=\"MyBBEditor.insert(restitem);\">\',
-						\'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$mybb->settings[\'quickadveditorplus_restore_lang\']}</div>\',
-					\'</a>\'
+					'<a class=\"sceditor-button\" title=\"{\$mybb->settings['quickadveditorplus_restore_lang']}\" onclick=\"MyBBEditor.insert(restitem);\">',
+						'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$mybb->settings['quickadveditorplus_restore_lang']}</div>',
+					'</a>'
 				];
 
-				\$(restorebut.join(\'\')).appendTo(\'.sceditor-group:last\');
+				\$(restorebut.join('')).appendTo('.sceditor-group:last');
 			}
 		},600);
 		MyBBEditor.blur(function(e) {
@@ -371,41 +376,35 @@ if({\$mybb->settings[\'quickadveditorplus_qedit\']}!=0) {
 /**********************************
  * Thread compatibility functions *
  **********************************/
-if(typeof Thread !== \'undefined\')
+if(typeof Thread !== 'undefined')
 {
 	var quickReplyFunc = Thread.quickReply;
 	Thread.quickReply = function(e) {
-		var link_can = document.querySelector(\"link[rel=\'canonical\']\").href;
+		var link_can = document.querySelector(\"link[rel='canonical']\").href;
 		if(MyBBEditor) {
 			MyBBEditor.updateOriginal();
-			if({\$mybb->settings[\'quickadveditorplus_autosave\']}!=0) {
+			if({\$mybb->settings['quickadveditorplus_autosave']}!=0) {
 				qae_ac();
 			}
-			$(\'form[id*=\"quick_reply_form\"]\').bind(\'reset\', function() {
-				MyBBEditor.val(\'\').emoticons(true);
+			$('form[id*=\"quick_reply_form\"]').bind('reset', function() {
+				MyBBEditor.val('').emoticons(true);
 			});
 		}
 
 		return quickReplyFunc.call(this, e);
 	};
 };
-</script>",
-		"sid"		 => "-1"
-	);
-	$db->insert_query("templates", $template);
+</script>";
 
-	$template2 = array(
-		"tid"		 => NULL,
-		"title"		   => "codebutquick_pm",
-		"template"	  => "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme[\'editortheme\']}\" type=\"text/css\" media=\"all\" />
+	$new_template_global['codebutquick_pm'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js\"></script>
 <script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js\"></script>
 <script type=\"text/javascript\">
-var partialmode = {\$mybb->settings[\'partialmode\']},
+var partialmode = {\$mybb->settings['partialmode']},
 opt_editor = {
 	plugins: \"bbcode\",
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme[\'editortheme\']}\",
-	rtl: {\$lang->settings[\'rtl\']},
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme['editortheme']}\",
+	rtl: {\$lang->settings['rtl']},
 	locale: \"mybblang\",
 	enablePasteFiltering: true,
 	emoticonsEnabled: {\$emoticons_enabled},
@@ -430,26 +429,26 @@ opt_editor = {
 
 function qae_as() {
 	if (MyBBEditor) {
-		sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+		sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 		link_can = location.href;
 		if (!sc_asd) {
 			sc_asd = {};
 		}
 		if (MyBBEditor.val() != sc_asd[link_can]) {
 			if (\$.trim(MyBBEditor.val())) {
-				if(!\$(\'#autosave\').length) {
-					$(\'<div/>\', { id: \'autosave\', class: \'bottom-right\' }).appendTo(\'body\');
+				if(!\$('#autosave').length) {
+					$('<div/>', { id: 'autosave', class: 'bottom-right' }).appendTo('body');
 				}
 				setTimeout(function() {
-					\$(\'#autosave\').jGrowl(\'{\$mybb->settings[\'quickadveditorplus_save_lang\']}\', { life: 500 });
+					\$('#autosave').jGrowl('{\$mybb->settings['quickadveditorplus_save_lang']}', { life: 500 });
 				},200);
 				sc_asd[link_can] = MyBBEditor.val();
-				localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 			}
 			else {
 				if (sc_asd[link_can]) {
 					delete sc_asd[link_can];
-					localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+					localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 				}
 			}
 		}
@@ -457,60 +456,60 @@ function qae_as() {
 }
 
 function qae_ac() {
-	sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+	sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 	link_can = location.href;
 	if (!sc_asd) {
 		sc_asd = {};
 	}
 	if (sc_asd[link_can]) {
 		delete sc_asd[link_can];
-		localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+		localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 	}
 }
 
 function qae_ar() {
-	sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+	sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 	if (!sc_asd) {
 		sc_asd = {};
 	}
-	if(Object.keys(sc_asd).length > {\$mybb->settings[\'quickadveditorplus_saveamount\']}) {
+	if(Object.keys(sc_asd).length > {\$mybb->settings['quickadveditorplus_saveamount']}) {
 		delete sc_asd[Object.keys(sc_asd)[0]];
-		localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
+		localStorage.setItem('sc_as', JSON.stringify(sc_asd));
 	}
 }
 
-(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'input[accesskey*=\"s\"]\', function () {
+(\$.fn.on || \$.fn.live).call(\$(document), 'click', 'input[accesskey*=\"s\"]', function () {
 	MyBBEditor.updateOriginal();
 	qae_ac();
 });
 
-(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'input[name*=\"preview\"]\', function () {
+(\$.fn.on || \$.fn.live).call(\$(document), 'click', 'input[name*=\"preview\"]', function () {
 	MyBBEditor.updateOriginal();
 });
 
 \$(document).ready(function() {
-	\$(\'#message\').height(\'{\$mybb->settings[\'quickadveditorplus_qurp_heigh\']}px\');
-	\$(\'#message\').sceditor(opt_editor);
-	MyBBEditor = $(\'#message\').sceditor(\'instance\');
+	\$('#message').height('{\$mybb->settings['quickadveditorplus_qurp_heigh']}px');
+	\$('#message').sceditor(opt_editor);
+	MyBBEditor = $('#message').sceditor('instance');
 	{\$sourcemode}
-	if({\$mybb->settings[\'quickadveditorplus_autosave\']}!=0) {
+	if({\$mybb->settings['quickadveditorplus_autosave']}!=0) {
 		setInterval(function() {
 			qae_as();
 			qae_ar();
-		},{\$mybb->settings[\'quickadveditorplus_savetime\']}*1000);
+		},{\$mybb->settings['quickadveditorplus_savetime']}*1000);
 
 		setTimeout(function() {
-			sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+			sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 			link_can = location.href;
 			restitem = \"\";
 			if (restitem) {
 				var restorebut = [
-					\'<a class=\"sceditor-button\" title=\"{\$mybb->settings[\'quickadveditorplus_restore_lang\']}\" onclick=\"MyBBEditor.insert(restitem);\">\',
-						\'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$mybb->settings[\'quickadveditorplus_restore_lang\']}</div>\',
-					\'</a>\'
+					'<a class=\"sceditor-button\" title=\"{\$mybb->settings['quickadveditorplus_restore_lang']}\" onclick=\"MyBBEditor.insert(restitem);\">',
+						'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$mybb->settings['quickadveditorplus_restore_lang']}</div>',
+					'</a>'
 				];
 
-				\$(restorebut.join(\'\')).appendTo(\'.sceditor-group:last\');
+				\$(restorebut.join('')).appendTo('.sceditor-group:last');
 			}
 		},600);
 		MyBBEditor.blur(function(e) {
@@ -523,73 +522,133 @@ function qae_ar() {
 		});
 	}
 });
-</script>",
-		"sid"		 => "-1"
-	);
-	$db->insert_query("templates", $template2);
+</script>";
+	
+    foreach($new_template_global as $title => $template)
+	{
+		$new_template_global = array('title' => $db->escape_string($title), 'template' => $db->escape_string($template), 'sid' => '-1', 'version' => '1801', 'dateline' => TIME_NOW);
+		$db->insert_query('templates', $new_template_global);
+	}	
 
-	$template3 = array(
-		"title"		   => "postbit_quickquote",
-		"template"	  => "<button style=\"display: none; float: right;\" id=\"qr_pid_{\$post[\'pid\']}\">{\$lang->postbit_button_quote}</button>
+	$new_template['postbit_quickquote'] = "<button style=\"display: none; float: right;\" id=\"qr_pid_{\$post['pid']}\">{\$lang->postbit_button_quote}</button>
 <script type=\"text/javascript\">
 	\$(document).ready(function() {
-		quick_quote({\$post[\'pid\']},\'{\$post[\'username\']}\',{\$post[\'dateline\']});
+		quick_quote({\$post['pid']},'{\$post['username']}',{\$post['dateline']});
 	});
-</script>",
-		"sid"		 => "-2"
-	);
-	$db->insert_query("templates", $template3);
+</script>";
 
-	$template4 = array(
-		"title"		   => "usercp_qae_drafts",
-		"template"	  => "<html>
+	$new_template['usercp_qae_drafts'] = "<html>
 <head>
-<title>{\$mybb->settings[\'bbname\']} - {\$lang->quickadveditorplus_page_title}</title>
+<title>{\$mybb->settings['bbname']} - {\$lang->quickadveditorplus_page_title}</title>
 {\$headerinclude}
 <script type=\"text/javascript\">
 \$(document).ready(function() {
-	(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'.remove_autosave\', function (e) {
+	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '.remove_autosave', function (e) {
 		e.preventDefault();
-		sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+		sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 		if (!sc_asd) {
 			sc_asd = {};
 		}
-		if (sc_asd[\$(this).attr(\'id\')]) {
-			delete sc_asd[\$(this).attr(\'id\')];
+		if (sc_asd[\$(this).attr('id')]) {
+			delete sc_asd[\$(this).attr('id')];
 		}
-		localStorage.setItem(\'sc_as\', JSON.stringify(sc_asd));
-		\$(this).parents(\'.as_tr\').fadeOut(\'slow\');
+		localStorage.setItem('sc_as', JSON.stringify(sc_asd));
+		\$(this).parents('.as_tr').fadeOut('slow');
 		if(!Object.keys(sc_asd).length) {
-			if (!\$(\'.as_none\').length) {
-				\$(\'#sc_auto\').append( \'<tr class=\"as_none\"><td class=\"trow1\" colspan=\"7\">{\$lang->quickadveditorplus_any_draft}</td><tr>\' );
+			if (!\$('.as_none').length) {
+				\$('#sc_auto').append( '<tr class=\"as_none\"><td class=\"trow1\" colspan=\"7\">{\$lang->quickadveditorplus_any_draft}</td><tr>' );
 			}
 		}
 	});
 
-	(\$.fn.on || \$.fn.live).call(\$(document), \'click\', \'#remove_all\', function (e) {
+	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '#morelink', function (e) {
 		e.preventDefault();
-		sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
-		localStorage.setItem(\'sc_as\', JSON.stringify({}));
-		\$(document).find(\'.as_tr\').fadeOut(\'slow\');
-		if (!\$(\'.as_none\').length) {
-			\$(\'#sc_auto\').append( \'<tr class=\"as_none\"><td class=\"trow1\" colspan=\"7\">{\$lang->quickadveditorplus_any_draft}</td><tr>\' );
+		sc_asd = JSON.parse(localStorage.getItem('sc_as'));
+		var restitem = \"\";
+		link_can = \$(this).attr('href');
+		if (sc_asd) {
+			restitem = sc_asd[link_can];
+		}
+		if (!restitem) {
+			restitem = \"{\$lang->quickadveditorplus_not_message}\";
+		}
+		heightwin = window.innerHeight*0.6;
+		\$('body').append( '<div class=\"redmore\"><div style=\"overflow-y: auto;max-height: '+heightwin+'px !important; \"><table cellspacing=\"{\$theme['borderwidth']}\" cellpadding=\"{\$theme['tablespace']}\" class=\"tborder\"><tr><td class=\"thead\" colspan=\"2\"><div><strong>{\$lang->quickadveditorplus_message}</strong></div></td></tr><td class=\"trow1\"><textarea readonly=\"readonly\" style=\"width:99%;height: '+heightwin*0.8+'px;\" >'+restitem+'</textarea></td></table></div></div>' );
+		\$('.redmore').modal();
+	});
+
+	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '.edit_autosave', function (e) {
+		e.preventDefault();
+		sc_asd = JSON.parse(localStorage.getItem('sc_as'));
+		var restitem = \"\";
+		link_can = \$(this).attr('href');
+		if (sc_asd) {
+			restitem = sc_asd[link_can];
+		}
+		if (!restitem) {
+			restitem = \"{\$lang->quickadveditorplus_not_message}\";
+		}
+		heightwin = window.innerHeight*0.6;
+		\$('body').append( '<div class=\"edit\"><div style=\"overflow-y: auto;max-height: '+heightwin+'px !important; \"><table cellspacing=\"{\$theme['borderwidth']}\" cellpadding=\"{\$theme['tablespace']}\" class=\"tborder\"><tr><td class=\"thead\" colspan=\"2\"><div><strong>{\$lang->quickadveditorplus_edit_message}</strong></div></td></tr><td class=\"trow1\"><textarea id=\"edit_textarea\" style=\"width:99%;height: '+heightwin*0.8+'px;\" >'+restitem+'</textarea></td></table></div><button id=\"sv_edit\" style=\"margin:4px;\" ided=\"'+link_can+'\">{\$lang->quickadveditorplus_save}</button></div>' );
+		\$('.edit').modal();
+	});
+
+	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '#sv_edit', function (e) {
+		e.preventDefault();
+		sc_asd = JSON.parse(localStorage.getItem('sc_as'));
+		var restitem = \"\";
+		link_can = \$(this).attr('ided');
+		if (!sc_asd) {
+			sc_asd = {};
+		}
+		if (\$('#edit_textarea').val() != sc_asd[link_can]) {
+			if (\$.trim(\$('#edit_textarea').val())) {
+				sc_asd[link_can] = \$('#edit_textarea').val();
+				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
+			}
+			else {
+				if (sc_asd[link_can]) {
+					delete sc_asd[link_can];
+					localStorage.setItem('sc_as', JSON.stringify(sc_asd));
+				}
+			}
+		}
+		else {
+			if(!\$('#mes_no_edit').length) {
+				$('<div/>', { id: 'mes_no_edit', class: 'bottom-right' }).appendTo('body');
+			}
+			setTimeout(function() {
+				$('#mes_no_edit').jGrowl('{\$lang->quickadveditorplus_not_edit}', { life: 500 });
+			},200);
+			return;
+		}
+		location.reload();
+	});
+
+	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '#remove_all', function (e) {
+		e.preventDefault();
+		sc_asd = JSON.parse(localStorage.getItem('sc_as'));
+		localStorage.setItem('sc_as', JSON.stringify({}));
+		\$(document).find('.as_tr').fadeOut('slow');
+		if (!\$('.as_none').length) {
+			\$('#sc_auto').append( '<tr class=\"as_none\"><td class=\"trow1\" colspan=\"7\">{\$lang->quickadveditorplus_any_draft}</td><tr>' );
 		}
 	});
 
 	var i = 0;
-	sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+	sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 	if (!sc_asd) {
 		sc_asd = {};
 	}
 	if(!Object.keys(sc_asd).length) {
-		\$(\'#sc_auto\').append( \'<tr class=\"as_none\"><td class=\"trow1\" colspan=\"7\">{\$lang->quickadveditorplus_any_draft}</td><tr>\' );
+		\$('#sc_auto').append( '<tr class=\"as_none\"><td class=\"trow1\" colspan=\"7\">{\$lang->quickadveditorplus_any_draft}</td><tr>' );
 	}
 	\$.each( sc_asd, function( key, value ) {
 		i +=1;
 		numtrow = 2;
 		if (i % 2 == 0) { numtrow = 1; }
-		if (value.length > 200) { value = value.substr(0,200) + \"...\"; }
-		$(\'#sc_auto\').append( \'<tr class=\"as_tr\"><td class=\"trow\'+numtrow+\'\"><a href=\"\'+key+\'\"><span class=\"smalltext\">\'+key.substr(key.lastIndexOf(\'/\') + 1)+\'</span></a></td><td class=\"trow\'+numtrow+\'\"><span class=\"smalltext\">\'+value+\'</span></td><td class=\"trow\'+numtrow+\'\" align=\"center\"><a href=\"\'+key+\'\" class=\"remove_autosave\" id=\"\'+key+\'\"><img src=\"/images/invalid.png\" title=\"{\$lang->quickadveditorplus_delete}\" alt=\"{\$lang->quickadveditorplus_delete}\" /></a></td><tr>\' );
+		if (value.length > 200) { value = value.substr(0,200) + '... <a href=\"'+key+'\" id=\"morelink\">{\$lang->quickadveditorplus_readmore}</a>'; }
+		$('#sc_auto').append( '<tr class=\"as_tr\"><td class=\"trow'+numtrow+'\"><a href=\"'+key+'\"><span class=\"smalltext\">'+key.substr(key.lastIndexOf('/') + 1)+'</span></a></td><td class=\"trow'+numtrow+'\"><span class=\"smalltext\">'+value+'</span></td><td class=\"trow'+numtrow+'\" align=\"center\"><a href=\"'+key+'\" class=\"edit_autosave\"><img src=\"{\$mybb->settings['bburl']}/images/icons/pencil.png\" title=\"{\$lang->quickadveditorplus_edit}\" alt=\"{\$lang->quickadveditorplus_edit}\" /></a></td><td class=\"trow'+numtrow+'\" align=\"center\"><a href=\"'+key+'\" class=\"remove_autosave\" id=\"'+key+'\"><img src=\"{\$mybb->settings['bburl']}/images/invalid.png\" title=\"{\$lang->quickadveditorplus_delete}\" alt=\"{\$lang->quickadveditorplus_delete}\" /></a></td><tr>' );
 	});
 });
 </script>
@@ -600,14 +659,15 @@ function qae_ar() {
 	<tr>
 		{\$usercpnav}
 		<td valign=\"top\">
-			<table id=\"sc_auto\" border=\"0\" cellspacing=\"{\$theme[\'borderwidth\']}\" cellpadding=\"{\$theme[\'tablespace\']}\" class=\"tborder no_bottom_border\">
+			<table id=\"sc_auto\" border=\"0\" cellspacing=\"{\$theme['borderwidth']}\" cellpadding=\"{\$theme['tablespace']}\" class=\"tborder no_bottom_border\">
 				<thead>
 					<tr>
 						 <td class=\"thead\" colspan=\"4\"><strong>{\$lang->quickadveditorplus_page_title}</strong></td>
 					</tr>
 					<tr>
 						<td class=\"tcat\" width=\"20%\" ><span class=\"smalltext\"><strong>{\$lang->quickadveditorplus_local}</strong></span></td>
-						<td class=\"tcat\" width=\"75%\"><span class=\"smalltext\"><strong>{\$lang->quickadveditorplus_content}</strong></span></td>
+						<td class=\"tcat\" width=\"70%\"><span class=\"smalltext\"><strong>{\$lang->quickadveditorplus_content}</strong></span></td>
+						<td class=\"tcat\" align=\"center\" width=\"5%\"><span class=\"smalltext\"><strong>{\$lang->quickadveditorplus_edit}</strong></span></td>
 						<td class=\"tcat\" align=\"center\" width=\"5%\"><span class=\"smalltext\"><strong>{\$lang->quickadveditorplus_delete}</strong></span></td>
 					</tr>
 				</thead>
@@ -621,16 +681,11 @@ function qae_ar() {
 </table>
 {\$footer}
 </body>
-</html>",
-		"sid"		 => "-2"
-	);
-	$db->insert_query("templates", $template4);
+</html>";
 
-	$template5 = array(
-		"title"		   => "usercp_nav_qae",
-		"template"	  => "<script type=\"text/javascript\">
+	$new_template['usercp_nav_qae'] = "<script type=\"text/javascript\">
 \$(document).ready(function() {
-	sc_asd = JSON.parse(localStorage.getItem(\'sc_as\'));
+	sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 	if (!sc_asd) {
 		sc_asd = {};
 	}
@@ -638,23 +693,26 @@ function qae_ar() {
 	if(Object.keys(sc_asd).length) {
 		var titlangas = \"<strong>\" + titlangas + \" (\" + Object.keys(sc_asd).length + \")\" + \"</strong>\";
 	}
-	\$(\'#itenum\').html(titlangas);
+	\$('#itenum').html(titlangas);
 });
 </script>
 <tbody>
 <tr>
-	<td class=\"tcat tcat_menu tcat_collapse{\$collapsedimg[\'qaedraftlist\']}\">
-		<div class=\"expcolimage\"><img src=\"{\$theme[\'imgdir\']}/collapse{\$collapsedimg[\'qaedraftlist\']}.png\" id=\"qaedraftlist_img\" class=\"expander\" alt=\"[-]\" title=\"[-]\" /></div>
+	<td class=\"tcat tcat_menu tcat_collapse{\$collapsedimg['qaedraftlist']}\">
+		<div class=\"expcolimage\"><img src=\"{\$theme['imgdir']}/collapse{\$collapsedimg['qaedraftlist']}.png\" id=\"qaedraftlist_img\" class=\"expander\" alt=\"[-]\" title=\"[-]\" /></div>
 		<div><span class=\"smalltext\"><strong>{\$lang->quickadveditorplus_page_title}</strong></span></div>
 	</td>
 </tr>
 </tbody>
-<tbody style=\"{\$collapsed[\'qaedraftlist_e\']}\" id=\"qaedraftlist_e\">
+<tbody style=\"{\$collapsed['qaedraftlist_e']}\" id=\"qaedraftlist_e\">
 	<tr><td class=\"trow1 smalltext\"><a href=\"usercp.php?action=qae_autosave\" class=\"usercp_nav_item usercp_nav_drafts\" id=\"itenum\"></a></td></tr>
-</tbody>",
-		"sid"		 => "-2"
-	);
-	$db->insert_query("templates", $template5);
+</tbody>";
+
+    foreach($new_template as $title => $template2)
+	{
+		$new_template = array('title' => $db->escape_string($title), 'template' => $db->escape_string($template2), 'sid' => '-2', 'version' => '1801', 'dateline' => TIME_NOW);
+		$db->insert_query('templates', $new_template);
+	}
 
 	find_replace_templatesets(
 		'showthread_quickreply',
@@ -714,9 +772,6 @@ function quickadveditorplus_deactivate()
 	global $db;
 	include_once MYBB_ROOT."inc/adminfunctions_templates.php";
 
-	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title='codebutquick'");
-	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title='codebutquick_pm'");
-	$db->query("DELETE FROM ".TABLE_PREFIX."templates WHERE title='postbit_quickquote'");
 	$db->delete_query("templates", "title IN('codebutquick','codebutquick_pm','postbit_quickquote','usercp_qae_drafts','usercp_nav_qae')");
 
 	find_replace_templatesets(
