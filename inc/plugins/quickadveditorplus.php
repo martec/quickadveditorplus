@@ -505,6 +505,9 @@ function qae_ar() {
 			sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 			link_can = location.href;
 			restitem = \"\";
+			if (sc_asd) {
+				restitem = sc_asd[link_can];
+			}			
 			if (restitem) {
 				var restorebut = [
 					'<a class=\"sceditor-button\" title=\"{\$mybb->settings['quickadveditorplus_restore_lang']}\" onclick=\"MyBBEditor.insert(restitem);\">',
