@@ -7,7 +7,7 @@
  * @Quick Advanced Editor Plus
  * @author	martec
  * @license http://www.gnu.org/copyleft/gpl.html GPLv3 license
- * @version 2.1.0
+ * @version 2.1.1
  * @Special Thanks: Aries-Belgium http://mods.mybb.com/view/quickquote
  */
 
@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '2.1.0');
+define('QAEP_PLUGIN_VER', '2.1.1');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -59,7 +59,7 @@ function quickadveditorplus_install()
     {
         flash_message("{$lang->quickadveditorplus_mybbver_req}", "error");
         admin_redirect("index.php?module=config-plugins");
-    }	
+    }
 
 	$groupid = $db->insert_query('settinggroups', array(
 		'name'		=> 'quickadveditorplus',
@@ -331,12 +331,13 @@ if({\$mybb->settings['quickadveditorplus_qedit']}!=0) {
 });
 
 (\$.fn.on || \$.fn.live).call(\$(document), 'click', 'input[accesskey*=\"s\"]', function () {
-	qae_ac();
+	if({\$mybb->settings['quickadveditorplus_autosave']}!=0) {
+		qae_ac();
+	}
 });
 
 \$(document).ready(function() {
 	\$('#message').height('{\$mybb->settings['quickadveditorplus_qurp_heigh']}px');
-	var link_can = document.querySelector(\"link[rel='canonical']\").href;
 	\$('#message').sceditor(opt_editor);
 	MyBBEditor = $('#message').sceditor('instance');
 	{\$sourcemode}
@@ -349,6 +350,7 @@ if({\$mybb->settings['quickadveditorplus_qedit']}!=0) {
 		setTimeout(function() {
 			sc_asd = JSON.parse(localStorage.getItem('sc_as'));
 			restitem = \"\";
+			link_can = document.querySelector(\"link[rel='canonical']\").href;
 			if (sc_asd) {
 				restitem = sc_asd[link_can];
 			}
@@ -380,7 +382,6 @@ if(typeof Thread !== 'undefined')
 {
 	var quickReplyFunc = Thread.quickReply;
 	Thread.quickReply = function(e) {
-		var link_can = document.querySelector(\"link[rel='canonical']\").href;
 		if(MyBBEditor) {
 			MyBBEditor.updateOriginal();
 			if({\$mybb->settings['quickadveditorplus_autosave']}!=0) {
@@ -480,7 +481,9 @@ function qae_ar() {
 
 (\$.fn.on || \$.fn.live).call(\$(document), 'click', 'input[accesskey*=\"s\"]', function () {
 	MyBBEditor.updateOriginal();
-	qae_ac();
+	if({\$mybb->settings['quickadveditorplus_autosave']}!=0) {
+		qae_ac();
+	}
 });
 
 (\$.fn.on || \$.fn.live).call(\$(document), 'click', 'input[name*=\"preview\"]', function () {
