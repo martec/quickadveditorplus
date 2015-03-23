@@ -12,4 +12,6 @@ $l['quickadveditorplus_delete'] = 'Delete';
 $l['quickadveditorplus_save'] = 'Save';
 $l['quickadveditorplus_readmore'] = 'Read More';
 $l['quickadveditorplus_remove_all'] = 'Remove All Saved Drafts';
+$l['quickadveditorplus_editor_restore'] = 'Restore';
+$l['quickadveditorplus_auto_save_message'] = 'Automatic Save: Message Saved.';
 ?>

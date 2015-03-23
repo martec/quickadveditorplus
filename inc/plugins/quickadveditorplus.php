@@ -234,7 +234,7 @@ function qae_as() {
 					$('<div/>', { id: 'autosave', class: 'bottom-right' }).appendTo('body');
 				}
 				setTimeout(function() {
-					\$('#autosave').jGrowl('{\$lang->quickadveditorplus_auto_save_message}', { life: 500 });
+					\$('#autosave').jGrowl('{\$lang->quickadveditorplus_auto_save_message}', { life: 5000 });
 				},200);
 				sc_asd[link_can] = MyBBEditor.val();
 				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
@@ -420,7 +420,7 @@ function qae_as() {
 					$('<div/>', { id: 'autosave', class: 'bottom-right' }).appendTo('body');
 				}
 				setTimeout(function() {
-					\$('#autosave').jGrowl('{\$lang->quickadveditorplus_auto_save_message}', { life: 500 });
+					\$('#autosave').jGrowl('{\$lang->quickadveditorplus_auto_save_message}', { life: 5000 });
 				},200);
 				sc_asd[link_can] = MyBBEditor.val();
 				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
@@ -603,7 +603,7 @@ function qae_ar() {
 				$('<div/>', { id: 'mes_no_edit', class: 'bottom-right' }).appendTo('body');
 			}
 			setTimeout(function() {
-				$('#mes_no_edit').jGrowl('{\$lang->quickadveditorplus_not_edit}', { life: 500 });
+				$('#mes_no_edit').jGrowl('{\$lang->quickadveditorplus_not_edit}', { life: 5000 });
 			},200);
 			return;
 		}

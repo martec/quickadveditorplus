@@ -21,10 +21,4 @@ $l['quickadveditorplus_saveamount_title'] = 'Amount of Auto Saved Drafts';
 $l['quickadveditorplus_saveamount_desc'] = 'Set amount of auto saved drafts. Default 20 drafts per user. High value is not recommended.';
 $l['quickadveditorplus_canonical_title'] = 'Canonical Link Feature';
 $l['quickadveditorplus_canonical_desc'] = 'Set to no if you do not want enable canonical link feature, this feature required by Auto Save Draft. If you use canonical link feature of google seo plugin, you can disable this feature.';
-$l['quickadveditorplus_save_title'] = 'Language for save action';
-$l['quickadveditorplus_save_desc'] = 'Define the phrase that appears when the message is saved.';
-$l['quickadveditorplus_save_default'] = 'Auto Save: Message Saved.';
-$l['quickadveditorplus_restor_title'] = 'Language for restore button';
-$l['quickadveditorplus_restor_desc'] = 'Define the phrase that appears to restore button.';
-$l['quickadveditorplus_restor_default'] = 'Restore';
 ?>
