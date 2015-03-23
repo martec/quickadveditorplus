@@ -64,7 +64,6 @@ function quickadveditorplus_install()
 		'name'		=> 'quickadveditorplus',
 		'title'		=> 'Quick Advanced Editor Plus',
 		'description'	=> $lang->quickadveditorplus_sett_desc,
-		'disporder'	=> $dorder,
 		'isdefault'	=> '0'
 	));
 
@@ -158,26 +157,6 @@ function quickadveditorplus_install()
 		'gid'		=> $groupid
 	);
 
-	$new_setting[] = array(
-		'name'		=> 'quickadveditorplus_save_lang',
-		'title'		=> $lang->quickadveditorplus_save_title,
-		'description'	=> $lang->quickadveditorplus_save_desc,
-		'optionscode'	=> 'text',
-		'value'		=> $lang->quickadveditorplus_save_default,
-		'disporder'	=> '10',
-		'gid'		=> $groupid
-	);
-
-	$new_setting[] = array(
-		'name'		=> 'quickadveditorplus_restore_lang',
-		'title'		=> $lang->quickadveditorplus_restor_title,
-		'description'	=> $lang->quickadveditorplus_restor_desc,
-		'optionscode'	=> 'text',
-		'value'		=> $lang->quickadveditorplus_restor_default,
-		'disporder'	=> '11',
-		'gid'		=> $groupid
-	);
-
     $db->insert_query_multiple("settings", $new_setting);
     rebuild_settings();
 }
@@ -196,7 +175,7 @@ function quickadveditorplus_uninstall()
 {
 	global $db;
 
-	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_smile', 'quickadveditorplus_qedit', 'quickadveditorplus_quickquote', 'quickadveditorplus_autosave', 'quickadveditorplus_savetime', 'quickadveditorplus_saveamount', 'quickadveditorplus_canonicallink', 'quickadveditorplus_save_lang', 'quickadveditorplus_restor_lang')");
+	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_smile', 'quickadveditorplus_qedit', 'quickadveditorplus_quickquote', 'quickadveditorplus_autosave', 'quickadveditorplus_savetime', 'quickadveditorplus_saveamount', 'quickadveditorplus_canonicallink')");
 	$db->delete_query("settinggroups", "name = 'quickadveditorplus'");
 }
 
@@ -255,7 +234,7 @@ function qae_as() {
 					$('<div/>', { id: 'autosave', class: 'bottom-right' }).appendTo('body');
 				}
 				setTimeout(function() {
-					\$('#autosave').jGrowl('{\$mybb->settings['quickadveditorplus_save_lang']}', { life: 500 });
+					\$('#autosave').jGrowl('{\$lang->quickadveditorplus_auto_save_message}', { life: 500 });
 				},200);
 				sc_asd[link_can] = MyBBEditor.val();
 				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
@@ -295,7 +274,7 @@ function qae_ar() {
 
 if({\$mybb->settings['quickadveditorplus_qedit']}!=0) {
 	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '.quick_edit_button', function () {
-		\$.jGrowl('<img src=\"images/spinner_big.gif\" />');
+		\$.jGrowl('<img src=\"images/spinner.gif\" />');
 		ed_id = \$(this).attr('id');
 		var pid = ed_id.replace( /[^0-9]/g, '');
 		\$('#quickedit_'+pid).height('{\$mybb->settings['quickadveditorplus_qued_heigh']}px');
@@ -356,8 +335,8 @@ if({\$mybb->settings['quickadveditorplus_qedit']}!=0) {
 			}
 			if (restitem) {
 				var restorebut = [
-					'<a class=\"sceditor-button\" title=\"{\$mybb->settings['quickadveditorplus_restore_lang']}\" onclick=\"MyBBEditor.insert(restitem);\">',
-						'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$mybb->settings['quickadveditorplus_restore_lang']}</div>',
+					'<a class=\"sceditor-button\" title=\"{\$lang->quickadveditorplus_editor_restore}\" onclick=\"MyBBEditor.insert(restitem);\">',
+						'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$lang->quickadveditorplus_editor_restore}</div>',
 					'</a>'
 				];
 
@@ -441,7 +420,7 @@ function qae_as() {
 					$('<div/>', { id: 'autosave', class: 'bottom-right' }).appendTo('body');
 				}
 				setTimeout(function() {
-					\$('#autosave').jGrowl('{\$mybb->settings['quickadveditorplus_save_lang']}', { life: 500 });
+					\$('#autosave').jGrowl('{\$lang->quickadveditorplus_auto_save_message}', { life: 500 });
 				},200);
 				sc_asd[link_can] = MyBBEditor.val();
 				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
@@ -507,11 +486,11 @@ function qae_ar() {
 			restitem = \"\";
 			if (sc_asd) {
 				restitem = sc_asd[link_can];
-			}			
+			}
 			if (restitem) {
 				var restorebut = [
-					'<a class=\"sceditor-button\" title=\"{\$mybb->settings['quickadveditorplus_restore_lang']}\" onclick=\"MyBBEditor.insert(restitem);\">',
-						'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$mybb->settings['quickadveditorplus_restore_lang']}</div>',
+					'<a class=\"sceditor-button\" title=\"{\$lang->quickadveditorplus_editor_restore}\" onclick=\"MyBBEditor.insert(restitem);\">',
+						'<div style=\"background-image: url(images/rest.png); opacity: 1; cursor: pointer;\">{\$lang->quickadveditorplus_editor_restore}}</div>',
 					'</a>'
 				];
 
@@ -529,12 +508,12 @@ function qae_ar() {
 	}
 });
 </script>";
-	
+
     foreach($new_template_global as $title => $template)
 	{
 		$new_template_global = array('title' => $db->escape_string($title), 'template' => $db->escape_string($template), 'sid' => '-1', 'version' => '1801', 'dateline' => TIME_NOW);
 		$db->insert_query('templates', $new_template_global);
-	}	
+	}
 
 	$new_template['postbit_quickquote'] = "<button style=\"display: none; float: right;\" id=\"qr_pid_{\$post['pid']}\">{\$lang->postbit_button_quote}</button>
 <script type=\"text/javascript\">
@@ -1096,6 +1075,10 @@ function mycode_inserter_quick($smilies = true)
 		if($mybb->settings['quickadveditorplus_quickquote'] == 1)
 		{
 			$quickquote = "<script type=\"text/javascript\" src=\"".$mybb->asset_url."/jscripts/Thread.quickquote.js?ver=".QAEP_PLUGIN_VER."\"></script>";
+		}
+
+		if (!$lang->quickadveditorplus) {
+			$lang->load('quickadveditorplus');
 		}
 
 		if (!strpos($_SERVER['PHP_SELF'],'private.php')) {
