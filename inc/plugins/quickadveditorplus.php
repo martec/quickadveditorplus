@@ -60,6 +60,9 @@ function quickadveditorplus_install()
         admin_redirect("index.php?module=config-plugins");
     }
 
+	$query	= $db->simple_select("settinggroups", "COUNT(*) as rows");
+	$dorder = $db->fetch_field($query, 'rows') + 1;
+
 	$groupid = $db->insert_query('settinggroups', array(
 		'name'		=> 'quickadveditorplus',
 		'title'		=> 'Quick Advanced Editor Plus',
@@ -507,7 +510,7 @@ function qae_ar() {
 			restitem = \"\";
 			if (sc_asd) {
 				restitem = sc_asd[link_can];
-			}			
+			}
 			if (restitem) {
 				var restorebut = [
 					'<a class=\"sceditor-button\" title=\"{\$mybb->settings['quickadveditorplus_restore_lang']}\" onclick=\"MyBBEditor.insert(restitem);\">',
@@ -529,12 +532,12 @@ function qae_ar() {
 	}
 });
 </script>";
-	
+
     foreach($new_template_global as $title => $template)
 	{
 		$new_template_global = array('title' => $db->escape_string($title), 'template' => $db->escape_string($template), 'sid' => '-1', 'version' => '1801', 'dateline' => TIME_NOW);
 		$db->insert_query('templates', $new_template_global);
-	}	
+	}
 
 	$new_template['postbit_quickquote'] = "<button style=\"display: none; float: right;\" id=\"qr_pid_{\$post['pid']}\">{\$lang->postbit_button_quote}</button>
 <script type=\"text/javascript\">
