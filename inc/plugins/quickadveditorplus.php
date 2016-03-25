@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '2.1.3');
+define('QAEP_PLUGIN_VER', '2.1.4');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -199,8 +199,14 @@ function quickadveditorplus_uninstall()
 {
 	global $db;
 
-	$db->write_query("DELETE FROM " . TABLE_PREFIX . "settings WHERE name IN('quickadveditorplus_smile', 'quickadveditorplus_qedit', 'quickadveditorplus_quickquote', 'quickadveditorplus_autosave', 'quickadveditorplus_savetime', 'quickadveditorplus_saveamount', 'quickadveditorplus_canonicallink', 'quickadveditorplus_save_lang', 'quickadveditorplus_restor_lang')");
+	$groupid = $db->fetch_field(
+		$db->simple_select('settinggroups', 'gid', "name='quickadveditorplus'"),
+		'gid'
+	);
+
+	$db->delete_query('settings', 'gid=' . $groupid);
 	$db->delete_query("settinggroups", "name = 'quickadveditorplus'");
+	rebuild_settings();
 }
 
 function quickadveditorplus_activate()
