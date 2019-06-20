@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '2.1.4');
+define('QAEP_PLUGIN_VER', '2.2.0');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -54,7 +54,7 @@ function quickadveditorplus_install()
 
 	$lang->load('config_quickadveditorplus');
 
-    if($mybb->version_code < 1804)
+    if($mybb->version_code < 1821)
     {
         flash_message("{$lang->quickadveditorplus_mybbver_req}", "error");
         admin_redirect("index.php?module=config-plugins");
@@ -189,8 +189,8 @@ function quickadveditorplus_is_installed()
 {
 	global $db;
 
-	$query = $db->simple_select("settinggroups", "COUNT(*) as rows", "name = 'quickadveditorplus'");
-	$rows  = $db->fetch_field($query, 'rows');
+	$query = $db->simple_select("settinggroups", "COUNT(*) as rows_n", "name = 'quickadveditorplus'");
+	$rows  = $db->fetch_field($query, 'rows_n');
 
 	return ($rows > 0);
 }
@@ -215,22 +215,27 @@ function quickadveditorplus_activate()
 
 	include_once MYBB_ROOT.'inc/adminfunctions_templates.php';
 
-	$new_template_global['codebutquick'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js\"></script>
+	$new_template_global['codebutquick'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js?ver=1821\"></script>
 {\$quickquote}
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js?ver=1804\"></script>
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/editor_plugins/undo.js?ver=1804\"></script>
+{\$quickquotesty}
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js?ver=1821\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/editor_plugins/undo.js?ver=1821\"></script>
 <script type=\"text/javascript\">
 var partialmode = {\$mybb->settings['partialmode']},
 MYBB_SMILIES = {
 	{\$smilies_json}
 },
 opt_editor = {
-	plugins: \"bbcode,undo\",
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme['editortheme']}\",
+	plugins: \"undo\",
+	format: \"bbcode\",
+	bbcodeTrim: true,
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/styles/jquery.sceditor.{\$theme['editortheme']}?ver=1821\",
 	rtl: {\$lang->settings['rtl']},
 	locale: \"mybblang\",
+	width: \"100%\",
 	enablePasteFiltering: true,
+	autoUpdate: true,
 	emoticonsEnabled: {\$emoticons_enabled},
 	emoticons: {
 		// Emoticons to be included in the dropdown
@@ -250,6 +255,7 @@ opt_editor = {
 	toolbar: \"{\$basic1}{\$align}{\$font}{\$size}{\$color}{\$removeformat}{\$basic2}image,{\$email}{\$link}|video{\$emoticon}|{\$list}{\$code}quote|maximize,source\",
 };
 {\$editor_language}
+rinvbquote = {\$rin_vbquote};
 
 function qae_as() {
 	if (MyBBEditor) {
@@ -264,7 +270,7 @@ function qae_as() {
 					$('<div/>', { id: 'autosave', class: 'bottom-right' }).appendTo('body');
 				}
 				setTimeout(function() {
-					\$('#autosave').jGrowl('{\$mybb->settings['quickadveditorplus_save_lang']}', { life: 500 });
+					\$('#autosave').jGrowl('{\$mybb->settings['quickadveditorplus_save_lang']}', { life: 500, theme: 'jgrowl_success' });
 				},200);
 				sc_asd[link_can] = MyBBEditor.val();
 				localStorage.setItem('sc_as', JSON.stringify(sc_asd));
@@ -304,7 +310,7 @@ function qae_ar() {
 
 if({\$mybb->settings['quickadveditorplus_qedit']}!=0) {
 	(\$.fn.on || \$.fn.live).call(\$(document), 'click', '.quick_edit_button', function () {
-		\$.jGrowl('<img src=\"images/spinner_big.gif\" />');
+		\$.jGrowl('<img src=\"images/spinner_big.gif\" />', {theme: 'jgrowl_success'});
 		ed_id = \$(this).attr('id');
 		var pid = ed_id.replace( /[^0-9]/g, '');
 		\$('#quickedit_'+pid).height('{\$mybb->settings['quickadveditorplus_qued_heigh']}px');
@@ -314,7 +320,7 @@ if({\$mybb->settings['quickadveditorplus_qedit']}!=0) {
 				\$('#quickedit_'+pid).sceditor('instance').focus();
 				\$('#quickedit_'+pid).next().css( \"z-index\", \"5\" );
 			}
-			offset = \$('#quickedit_'+pid).next().offset().top - 60;
+			offset = \$('#quickedit_'+pid).next().offset().top - '{\$mybb->settings['quickadveditorplus_qued_heigh']}';
 			setTimeout(function() {
 				\$('html, body').animate({
 					scrollTop: offset
@@ -406,17 +412,21 @@ if(typeof Thread !== 'undefined')
 };
 </script>";
 
-	$new_template_global['codebutquick_pm'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/editor_themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js\"></script>
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js\"></script>
+	$new_template_global['codebutquick_pm'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js?ver=1821\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js?ver=1821\"></script>
 <script type=\"text/javascript\">
 var partialmode = {\$mybb->settings['partialmode']},
 opt_editor = {
-	plugins: \"bbcode\",
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/textarea_styles/jquery.sceditor.{\$theme['editortheme']}\",
+	plugins: \"undo\",
+	format: \"bbcode\",
+	bbcodeTrim: true,
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/styles/jquery.sceditor.{\$theme['editortheme']}?ver=1821\",
 	rtl: {\$lang->settings['rtl']},
 	locale: \"mybblang\",
+	width: \"100%\",
 	enablePasteFiltering: true,
+	autoUpdate: true,
 	emoticonsEnabled: {\$emoticons_enabled},
 	emoticons: {
 		// Emoticons to be included in the dropdown
@@ -545,7 +555,7 @@ function qae_ar() {
 		$db->insert_query('templates', $new_template_global);
 	}
 
-	$new_template['postbit_quickquote'] = "<button style=\"display: none; float: right;\" id=\"qr_pid_{\$post['pid']}\">{\$lang->postbit_button_quote}</button>
+	$new_template['postbit_quickquote'] = "<div class=\"rin-qc\" style=\"display: none;\" id=\"qr_pid_{\$post['pid']}\"><span>{\$lang->postbit_button_quote}</span></div>
 <script type=\"text/javascript\">
 	\$(document).ready(function() {
 		quick_quote({\$post['pid']},'{\$post['username']}',{\$post['dateline']});
@@ -944,7 +954,7 @@ function mycode_inserter_quick($smilies = true)
 		"editor_invalidyoutube" => "Invalid YouTube video",
 		"editor_dailymotion" => "Dailymotion",
 		"editor_metacafe" => "MetaCafe",
-		"editor_veoh" => "Veoh",
+		"editor_mixer" => "Mixer",
 		"editor_vimeo" => "Vimeo",
 		"editor_youtube" => "Youtube",
 		"editor_facebook" => "Facebook",
@@ -1044,7 +1054,7 @@ function mycode_inserter_quick($smilies = true)
 			}
 		}
 
-		$basic1 = $basic2 = $align = $font = $size = $color = $removeformat = $email = $link = $list = $code = $sourcemode = $quickquote = "";
+		$basic1 = $basic2 = $align = $font = $size = $color = $removeformat = $email = $link = $list = $code = $sourcemode = $quickquote = $rin_vbquote = $quickquotesty = "";
 
 		if($mybb->settings['allowbasicmycode'] == 1)
 		{
@@ -1105,6 +1115,15 @@ function mycode_inserter_quick($smilies = true)
 		if($mybb->settings['quickadveditorplus_quickquote'] == 1)
 		{
 			$quickquote = "<script type=\"text/javascript\" src=\"".$mybb->asset_url."/jscripts/Thread.quickquote.js?ver=".QAEP_PLUGIN_VER."\"></script>";
+			$quickquotesty = "<link rel=\"stylesheet\" href=\"".$mybb->asset_url."/jscripts/quickquote.css?ver=".QAEP_PLUGIN_VER."\" type=\"text/css\" />";
+		}
+		
+		$plu_vb = $cache->read("plugins");
+		if($plu_vb['active']['vbquote']) {
+			$rin_vbquote = 1;
+		}
+		else {
+			$rin_vbquote = 0;
 		}
 
 		if (!strpos($_SERVER['PHP_SELF'],'private.php')) {

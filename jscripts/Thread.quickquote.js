@@ -1,3 +1,4 @@
+isWebkit = 'WebkitAppearance' in document.documentElement.style;
 // Credits: http://stackoverflow.com/a/8340432
 function isOrContains(node, container) {
 	while (node) {
@@ -10,59 +11,165 @@ function isOrContains(node, container) {
 }
 
 function elementContainsSelection(el) {
-	var sel;
-	if ($.trim(window.getSelection().toString())) {
-		sel = window.getSelection();
-		if (sel.rangeCount > 0) {
-			for (var i = 0; i < sel.rangeCount; ++i) {
-				if (!isOrContains(sel.getRangeAt(i).commonAncestorContainer, el)) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-	return false;
+    var sel;
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount > 0) {
+            for (var i = 0; i < sel.rangeCount; ++i) {
+                if (!isOrContains(sel.getRangeAt(i).commonAncestorContainer, el)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    } else if ( (sel = document.selection) && sel.type != "Control") {
+        return isOrContains(sel.createRange().parentElement(), el);
+    }
+    return false;
 }
 
-function quick_quote(pid, username, dateline) {
-	function quick() {
-		setTimeout(function() {
-			if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
-				$('#qr_pid_' + pid + '').show();
+// Credits: https://stackoverflow.com/a/1589912
+ function getposition() {
+	var markerTextChar = "\ufeff";
+	var markerTextCharEntity = "&#xfeff;";
+
+	var markerEl, markerId = "sel_" + new Date().getTime() + "_" + Math.random().toString().substr(2);
+
+	var position = {};
+
+	var sel, range;
+
+	if (document.selection && document.selection.createRange) {
+		// Clone the TextRange and collapse
+		range = document.selection.createRange().duplicate();
+		range.collapse(false);
+
+		// Create the marker element containing a single invisible character by creating literal HTML and insert it
+		range.pasteHTML('<span id="' + markerId + '" style="position: relative;">' + markerTextCharEntity + '</span>');
+		markerEl = document.getElementById(markerId);
+	} else if (window.getSelection) {
+		sel = window.getSelection();
+
+		if (sel.getRangeAt) {
+			range = sel.getRangeAt(0).cloneRange();
+		} else {
+			// Older WebKit doesn't have getRangeAt
+			range = document.createRange();
+			range.setStart(sel.anchorNode, sel.anchorOffset);
+			range.setEnd(sel.focusNode, sel.focusOffset);
+
+			// Handle the case when the selection was selected backwards (from the end to the start in the
+			// document)
+			if (range.collapsed !== sel.isCollapsed) {
+				range.setStart(sel.focusNode, sel.focusOffset);
+				range.setEnd(sel.anchorNode, sel.anchorOffset);
 			}
-			else {
+		}
+
+		range.collapse(false);
+
+		// Create the marker element containing a single invisible character using DOM methods and insert it
+		markerEl = document.createElement("span");
+		markerEl.id = markerId;
+		markerEl.appendChild( document.createTextNode(markerTextChar) );
+		range.insertNode(markerEl);
+	}
+
+	if (markerEl) {
+
+			// Find markerEl position http://www.quirksmode.org/js/findpos.html
+		var obj = markerEl;
+		var left = 0, top = 0;
+		do {
+			left += obj.offsetLeft;
+			top += obj.offsetTop;
+		} while (obj = obj.offsetParent);
+
+			// Move the button into place.
+			// Substitute your jQuery stuff in here
+
+			position['left'] = left;
+			position['top'] = top;
+
+			markerEl.parentNode.removeChild(markerEl);
+
+			return position;
+	}
+}
+
+var beforeselect = null;
+function quick_quote(pid, username, dateline) {
+	function quick(event) {
+		var $me = $(event.target);
+
+		if (!$me.hasClass('post')) {
+			$me = $me.parents('.post');
+		}
+
+		if ($me && $me.length && $('#pid_' + pid + '').has('form').length == 0) {
+			var nowselect = window.getSelection().getRangeAt(0);
+			if ($.trim(window.getSelection().toString()) && beforeselect!=nowselect) {
+				beforeselect = nowselect;
+				if (elementContainsSelection($me.find('.post_body')[0])) {
+					var selection = window.getSelection(),
+					range = selection.getRangeAt(0),
+					rect = range.getBoundingClientRect();				
+					$elm = $('#qr_pid_' + pid + '').show();
+					$elm.css({
+						'top': (window.scrollY + rect.top + rect.height + 6) + 'px',
+						'left': (getposition().left - $elm.outerWidth() + 10) + 'px'
+					});
+				} else {
+					$('#qr_pid_' + pid + '').hide();
+				}
+			} else {
 				$('#qr_pid_' + pid + '').hide();
 			}
-		},50);
+		} else {
+			$('#qr_pid_' + pid + '').hide();
+		}
 	}
-	if ($('.new_reply_button').length && $('#quick_reply_form').length) {
-		$('#pid_' + pid + '').mousemove(quick).click(quick).find('blockquote');
-		$('body:not("#pid_' + pid + '")').click(function (){
+	if ($('#quick_reply_form').length) {
+		$('#pid_' + pid + '').on( "mouseup touchend", quick);
+		$('body:not("#pid_' + pid + '")').click(function (e){
 			if (!$.trim(window.getSelection().toString())){
 				$('#qr_pid_' + pid + '').hide();
 			}
-		})
+		});
 		$('#qr_pid_' + pid + '').click(function (e){
 			e.preventDefault();
 			setTimeout(function() {
 				if (elementContainsSelection(document.getElementById('pid_' + pid + ''))) {
 					Thread.quickQuote(pid,'' + username + '',dateline);
+					$('#qr_pid_' + pid + '').hide();
+					var sel = window.getSelection ? window.getSelection() : document.selection;
+					if (sel) {
+						if (sel.removeAllRanges) {
+							sel.removeAllRanges();
+						} else if (sel.empty) {
+							sel.empty();
+						}
+					}
 				}
 				else {
 					$('#qr_pid_' + pid + '').hide();
 				}
 			},200);
-		})
+		})		
 	}
 }
 
 // Credits: http://mods.mybb.com/view/quickquote
 Thread.quickQuote = function(pid, username, dateline)
 {
-	if(window.getSelection().toString().trim()) {
+	if(isWebkit || window.getSelection().toString().trim()) {
 		userSelection = window.getSelection().getRangeAt(0).cloneContents();
-		var quoteText = "[quote='" + username + "' pid='" + pid + "' dateline='" + dateline + "']\n";
+		if (parseInt(rinvbquote)) {
+			var	quoteText = "[quote="+username+";"+pid+"]\n";
+		}
+		else {
+			var quoteText = "[quote='" + username + "' pid='" + pid + "' dateline='" + dateline + "']\n";
+		}
 		quoteText += Thread.domToBB(userSelection , MYBB_SMILIES);
 		quoteText += "\n[/quote]\n";
 
@@ -74,9 +181,9 @@ Thread.quickQuote = function(pid, username, dateline)
 
 Thread.updateMessageBox = function(message)
 {
-	$('#message').sceditor('instance').insert(message);
+	MyBBEditor.insertText(message,'','','','quote');
 	setTimeout(function() {
-		offset = $('#message').next().offset().top - 60;
+		offset = $('#quickreply_e').offset().top - 60;
 		setTimeout(function() {
 			$('html, body').animate({
 				scrollTop: offset
