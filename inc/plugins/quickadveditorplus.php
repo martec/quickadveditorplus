@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '2.2.0');
+define('QAEP_PLUGIN_VER', '2.2.1');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -60,8 +60,8 @@ function quickadveditorplus_install()
         admin_redirect("index.php?module=config-plugins");
     }
 
-	$query	= $db->simple_select("settinggroups", "COUNT(*) as rows");
-	$dorder = $db->fetch_field($query, 'rows') + 1;
+	$query	= $db->simple_select("settinggroups", "COUNT(*) as rows_n");
+	$dorder = $db->fetch_field($query, 'rows_n') + 1;
 
 	$groupid = $db->insert_query('settinggroups', array(
 		'name'		=> 'quickadveditorplus',
@@ -408,6 +408,31 @@ if(typeof Thread !== 'undefined')
 		}
 
 		return quickReplyFunc.call(this, e);
+	};
+	Thread.multiQuotedLoaded =  function(request)
+	{
+		if(MyBBEditor) {
+			var json = JSON.parse(request.responseText);
+			if(typeof json == 'object')
+			{
+				if(json.hasOwnProperty(\"errors\"))
+				{
+					\$.each(json.errors, function(i, message)
+					{
+						\$.jGrowl(lang.post_fetch_error + ' ' + message, {theme:'jgrowl_error'});
+					});
+					return false;
+				}
+			}
+
+			MyBBEditor.insert(json.message);
+
+			Thread.clearMultiQuoted();
+			\$('#quickreply_multiquote').hide();
+			\$('#quoted_ids').val('all');
+
+			\$('#message').trigger('focus');
+		}
 	};
 };
 </script>";
