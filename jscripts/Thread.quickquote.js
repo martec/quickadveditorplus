@@ -181,7 +181,7 @@ Thread.quickQuote = function(pid, username, dateline)
 
 Thread.updateMessageBox = function(message)
 {
-	MyBBEditor.insertText(message,'','','','quote');
+	MyBBEditor.insert(message);
 	setTimeout(function() {
 		offset = $('#quickreply_e').offset().top - 60;
 		setTimeout(function() {
