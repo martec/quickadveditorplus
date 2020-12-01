@@ -1,4 +1,43 @@
 isWebkit = 'WebkitAppearance' in document.documentElement.style;
+qq_mousedown_pid = null;
+$(document).ready(function() {
+	if ($('#quick_reply_form').length) {
+		$(document).on('mouseup touchend', function(){
+			var pid = qq_mousedown_pid;
+			var $me = $(event.target);
+			var hide_reply_btn = true;
+
+			if (!$me.hasClass('post')) {
+				$me = $me.parents('.post');
+			}
+
+			if ($me && $me.length && $('#pid_' + pid + '').has('form').length == 0) {
+				var selection = window.getSelection();
+				if (selection.rangeCount > 0) {
+					var nowselect = selection.getRangeAt(0);
+					if ($.trim(window.getSelection().toString()) && beforeselect!=nowselect) {
+						beforeselect = nowselect;
+						if (elementContainsSelection($me.find('.post_body')[0])) {
+							range = selection.getRangeAt(0),
+							rect = range.getBoundingClientRect();
+							$elm = $('#qr_pid_' + pid + '').show();
+							$elm.css({
+								'top': (window.scrollY + rect.top + rect.height + 6) + 'px',
+								'left': (getposition().left - $elm.outerWidth() + 10) + 'px'
+							});
+							hide_reply_btn = false;
+						}
+					}
+				}
+			}
+
+			if (hide_reply_btn) {
+				$('#qr_pid_' + pid + '').hide();
+			}
+		});
+	}
+});
+
 // Credits: http://stackoverflow.com/a/8340432
 function isOrContains(node, container) {
 	while (node) {
@@ -99,38 +138,12 @@ function elementContainsSelection(el) {
 
 var beforeselect = null;
 function quick_quote(pid, username, dateline) {
-	function quick(event) {
-		var $me = $(event.target);
-
-		if (!$me.hasClass('post')) {
-			$me = $me.parents('.post');
-		}
-
-		if ($me && $me.length && $('#pid_' + pid + '').has('form').length == 0) {
-			var nowselect = window.getSelection().getRangeAt(0);
-			if ($.trim(window.getSelection().toString()) && beforeselect!=nowselect) {
-				beforeselect = nowselect;
-				if (elementContainsSelection($me.find('.post_body')[0])) {
-					var selection = window.getSelection(),
-					range = selection.getRangeAt(0),
-					rect = range.getBoundingClientRect();				
-					$elm = $('#qr_pid_' + pid + '').show();
-					$elm.css({
-						'top': (window.scrollY + rect.top + rect.height + 6) + 'px',
-						'left': (getposition().left - $elm.outerWidth() + 10) + 'px'
-					});
-				} else {
-					$('#qr_pid_' + pid + '').hide();
-				}
-			} else {
-				$('#qr_pid_' + pid + '').hide();
-			}
-		} else {
-			$('#qr_pid_' + pid + '').hide();
-		}
+	function qq_mousedown(event) {
+		qq_mousedown_pid = pid;
 	}
+
 	if ($('#quick_reply_form').length) {
-		$('#pid_' + pid + '').on( "mouseup touchend", quick);
+		$('#pid_' + pid).on('mousedown touchstart', qq_mousedown);
 		$('body:not("#pid_' + pid + '")').click(function (e){
 			if (!$.trim(window.getSelection().toString())){
 				$('#qr_pid_' + pid + '').hide();
