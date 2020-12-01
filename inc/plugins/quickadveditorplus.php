@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '2.2.2');
+define('QAEP_PLUGIN_VER', '2.2.3');
 
 // Plugin info
 function quickadveditorplus_info ()
@@ -54,7 +54,7 @@ function quickadveditorplus_install()
 
 	$lang->load('config_quickadveditorplus');
 
-    if($mybb->version_code < 1821)
+    if($mybb->version_code < 1824)
     {
         flash_message("{$lang->quickadveditorplus_mybbver_req}", "error");
         admin_redirect("index.php?module=config-plugins");
@@ -216,11 +216,11 @@ function quickadveditorplus_activate()
 	include_once MYBB_ROOT.'inc/adminfunctions_templates.php';
 
 	$new_template_global['codebutquick'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js?ver=1821\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js?ver=1822\"></script>
 {\$quickquote}
 {\$quickquotesty}
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js?ver=1821\"></script>
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/editor_plugins/undo.js?ver=1821\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js?ver=1824\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/plugins/undo.js?ver=1821\"></script>
 <script type=\"text/javascript\">
 var partialmode = {\$mybb->settings['partialmode']},
 MYBB_SMILIES = {
@@ -229,8 +229,8 @@ MYBB_SMILIES = {
 opt_editor = {
 	plugins: \"undo\",
 	format: \"bbcode\",
-	bbcodeTrim: true,
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/styles/jquery.sceditor.{\$theme['editortheme']}?ver=1821\",
+	bbcodeTrim: false,
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/styles/jquery.sceditor.{\$theme['editortheme']}?ver=1823\",
 	rtl: {\$lang->settings['rtl']},
 	locale: \"mybblang\",
 	width: \"100%\",
@@ -438,15 +438,16 @@ if(typeof Thread !== 'undefined')
 </script>";
 
 	$new_template_global['codebutquick_pm'] = "<link rel=\"stylesheet\" href=\"{\$mybb->asset_url}/jscripts/sceditor/themes/{\$theme['editortheme']}\" type=\"text/css\" media=\"all\" />
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js?ver=1821\"></script>
-<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js?ver=1821\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/jquery.sceditor.bbcode.min.js?ver=1822\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/bbcodes_sceditor.js?ver=1824\"></script>
+<script type=\"text/javascript\" src=\"{\$mybb->asset_url}/jscripts/sceditor/plugins/undo.js?ver=1821\"></script>
 <script type=\"text/javascript\">
 var partialmode = {\$mybb->settings['partialmode']},
 opt_editor = {
 	plugins: \"undo\",
 	format: \"bbcode\",
-	bbcodeTrim: true,
-	style: \"{\$mybb->asset_url}/jscripts/sceditor/styles/jquery.sceditor.{\$theme['editortheme']}?ver=1821\",
+	bbcodeTrim: false,
+	style: \"{\$mybb->asset_url}/jscripts/sceditor/styles/jquery.sceditor.{\$theme['editortheme']}?ver=1823\",
 	rtl: {\$lang->settings['rtl']},
 	locale: \"mybblang\",
 	width: \"100%\",
@@ -1132,7 +1133,7 @@ function mycode_inserter_quick($smilies = true)
 			$code = "code,php,";
 		}
 
-		if($mybb->user['sourceeditor'] == 1)
+		if($mybb->user['sourceeditor'] == 1 && $mybb->user['showquickreply'] == 1)
 		{
 			$sourcemode = "MyBBEditor.sourceMode(true);";
 		}
