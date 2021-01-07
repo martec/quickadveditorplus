@@ -17,7 +17,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-define('QAEP_PLUGIN_VER', '2.2.4');
+define('QAEP_PLUGIN_VER', '2.2.5');
 
 // Plugin info
 function quickadveditorplus_info ()
