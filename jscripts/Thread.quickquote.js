@@ -174,12 +174,6 @@ Thread.quickQuote = function(pid, username, dateline)
 {
 	if(isWebkit || window.getSelection().toString().trim()) {
 		var sel = window.getSelection();
-		var parentNode = sel.anchorNode.parentNode;
-		while (sel.containsNode(parentNode)) {
-			if (!parentNode.parentNode) {
-				break;
-			} else	parentNode = parentNode.parentNode;
-		}
 		var userSelection = sel.getRangeAt(0).cloneContents();
 		if (parseInt(rinvbquote)) {
 			var	quoteText = "[quote="+username+";"+pid+"]\n";
@@ -188,33 +182,18 @@ Thread.quickQuote = function(pid, username, dateline)
 			var quoteText = "[quote='" + username + "' pid='" + pid + "' dateline='" + dateline + "']\n";
 		}
 
-		// Add the cloned selected nodes to the document invisibly under
-		// their rightful parent node, so that the call to
-		// window.getComputedStyle() in domToBB() works.
-		var nodes = [];
-		while(userSelection.childNodes.length)
-		{
-			var childNode = userSelection.childNodes[0];
-			if (!childNode.style) {
-				var newSpan = document.createElement('span');
-				newSpan.appendChild(childNode);
-				childNode = userSelection.childNodes[0] = newSpan;
-			}
-			childNode.style.display = 'none';
-			nodes[nodes.length] = childNode;
-			parentNode.appendChild(childNode);
+		var parentNode1 = sel.anchorNode.parentNode;
+		var parentNode2 = sel.focusNode.parentNode;
+		var parentNode = parentNode1.contains(parentNode2) ? parentNode1 : parentNode2;
+		while (sel.containsNode(parentNode)) {
+			if (!parentNode.parentNode) {
+				break;
+			} else	parentNode = parentNode.parentNode;
 		}
-
-		quoteText += Thread.domToBB(nodes, MYBB_SMILIES);
+		quoteText += Thread.domToBB(userSelection, MYBB_SMILIES, parentNode, 1);
 		quoteText += "\n[/quote]\n";
 
-		// Now delete the cloned selected nodes from the document
-		for (var i = 0; i < nodes.length; i++) {
-			parentNode.removeChild(nodes[i]);
-		}
-
 		delete userSelection;
-		delete nodes;
 
 		Thread.updateMessageBox(quoteText);
 	}
@@ -243,7 +222,51 @@ Thread.toHex = function(N)
 			+ "0123456789ABCDEF".charAt(N%16);
 }
 
-Thread.domToBB = function(nodes, smilies)
+Thread.textNodeSpanToBB = function(spanEl)
+{
+	var openTag = '';
+	var content = '';
+	var closeTag = '';
+	var compStyles = window.getComputedStyle(spanEl, null);
+
+	if(compStyles.getPropertyValue("text-decoration") == "underline")
+	{
+		openTag = "[u]" + openTag;
+		closeTag = closeTag + "[/u]";
+	}
+	if(compStyles.getPropertyValue("font-weight") > 400 || compStyles.getPropertyValue("font-weight") == "bold")
+	{
+		openTag = "[b]" + openTag;
+		closeTag = closeTag + "[/b]";
+	}
+	if(compStyles.getPropertyValue("font-style") == "italic")
+	{
+		openTag = "[i]" + openTag;
+		closeTag = closeTag + "[/i]";
+	}
+	var colourVal = compStyles.getPropertyValue("color");
+	if(colourVal.indexOf('rgb') != -1)
+	{
+		var rgb = colourVal.replace("rgb(","").replace(")","").split(",");
+		var hex = "#"+Thread.RGBtoHex(parseInt(rgb[0]) , parseInt(rgb[1]) , parseInt(rgb[2]));
+	}
+	else
+	{
+		var hex = colourVal;
+	}
+	if (hex) {
+		openTag = "[color=" + hex + "]" + openTag;
+		closeTag = closeTag + "[/color]";
+	}
+
+	content = spanEl.childNodes[0].data.replace(/[\n\t]+/,'');
+
+	if (content) {
+		return openTag + content + closeTag;
+	} else	return '';
+}
+
+Thread.domToBB = function(domEl, smilies, parentNode, depth)
 {
 	var output = "";
 	var childNode;
@@ -251,54 +274,67 @@ Thread.domToBB = function(nodes, smilies)
 	var content;
 	var closeTag;
 
-	for(var i = 0 ; i < nodes.length ; i++)
+	for(var i = 0 ; i < domEl.childNodes.length ; i++)
 	{
-		childNode = nodes[i];
+		childNode = domEl.childNodes[i];
 		openTag = "";
 		content = "";
 		closeTag = "";
+		var clonedNode = null;
+		var newSpan = null;
 
 		if(typeof childNode.tagName == "undefined")
 		{
 			switch(childNode.nodeName)
 			{
 				case '#text':
-					content = childNode.data.replace(/[\n\t]+/,'');
-				break;
+					if (depth == 1) {
+						// Add the cloned text node to the document invisibly under
+						// its rightful parent node, so that the call to
+						// window.getComputedStyle() in textNodeSpanToBB() works.
+						newSpan = document.createElement('span');
+						clonedNode = childNode.cloneNode();
+						newSpan.appendChild(clonedNode);
+						newSpan.style.display = 'none';
+						parentNode.appendChild(newSpan);
+						output += Thread.textNodeSpanToBB(newSpan);
+					} else {
+						output += childNode.data.replace(/[\n\t]+/,'');
+					}
+					break;
 				default:
 					// do nothing
-				break;
-
+					break;
 			}
 		}
 		else
 		{
-			var compStyles = window.getComputedStyle(childNode, null);
-			if (compStyles.getPropertyValue("text-decoration") == "underline") {
-				openTag = "[u]" + openTag;
-				closeTag = closeTag + "[/u]";
-			}
-			if (compStyles.getPropertyValue("font-weight") > 400 || compStyles.getPropertyValue("font-weight") == "bold") {
-				openTag = "[b]" + openTag;
-				closeTag = closeTag + "[/b]";
-			}
-			if (compStyles.getPropertyValue("font-style") == "italic") {
-				openTag = "[i]" + openTag;
-				closeTag = closeTag + "[/i]";
-			}
 			switch(childNode.tagName)
 			{
 				case "SPAN":
 					// check style attributes
 					switch(true)
 					{
+						case childNode.style.textDecoration == "underline":
+							openTag = "[u]";
+							closeTag = "[/u]";
+							break;
+						case childNode.style.fontWeight > 0:
+						case childNode.style.fontWeight == "bold":
+							openTag = "[b]";
+							closeTag = "[/b]";
+							break;
+						case childNode.style.fontStyle == "italic":
+							openTag = "[i]";
+							closeTag = "[/i]";
+							break;
 						case childNode.style.fontFamily != "":
-							openTag = "[font=" + childNode.style.fontFamily + "]" + openTag;
-							closeTag = closeTag + "[/font]";
+							openTag = "[font=" + childNode.style.fontFamily + "]";
+							closeTag = "[/font]";
 							break;
 						case childNode.style.fontSize != "":
-							openTag = "[size=" + childNode.style.fontSize + "]" + openTag;
-							closeTag = closeTag + "[/size]";
+							openTag = "[size=" + childNode.style.fontSize + "]";
+							closeTag = "[/size]";
 							break;
 						case childNode.style.color != "":
 							if(childNode.style.color.indexOf('rgb') != -1)
@@ -310,8 +346,8 @@ Thread.domToBB = function(nodes, smilies)
 							{
 								var hex = childNode.style.color;
 							}
-							openTag = "[color=" + hex + "]" + openTag;
-							closeTag = closeTag + "[/color]";
+							openTag = "[color=" + hex + "]";
+							closeTag = "[/color]";
 							break;
 					}
 					break;
@@ -349,11 +385,11 @@ Thread.domToBB = function(nodes, smilies)
 						case childNode.href.indexOf("mailto:") == 0:
 							openTag = "[email=" + childNode.href.replace("mailto:","") + "]";
 							closeTag = "[/email]";
-						break;
+							break;
 						default:
 							openTag = "[url=" + childNode.href + "]";
 							closeTag = "[/url]";
-						break;
+							break;
 					}
 					break;
 				case "OL":
@@ -405,21 +441,27 @@ Thread.domToBB = function(nodes, smilies)
 					}
 					break;
 				case "P":
-						closeTag = "\n\n";
+					closeTag = "\n\n";
 					break;
 				case "BR":
-						closeTag = "\n"
+					closeTag = "\n"
 					break;
 			}
-		}
-		output += openTag + content;
+			output += openTag + content;
 
-		if(content == "" && childNode.childNodes && childNode.childNodes.length > 0)
-		{
-			output += Thread.domToBB(childNode.childNodes, smilies);
+			if(content == "" && childNode.childNodes && childNode.childNodes.length > 0)
+			{
+				output += Thread.domToBB(childNode, smilies, parentNode, depth+1);
+			}
+
+			output += closeTag;
 		}
 
-		output += closeTag;
+		if (clonedNode) {
+			newSpan.removeChild(clonedNode);
+			delete clonedNode;
+			parentNode.removeChild(newSpan);
+		}
 	}
 
 	return output;
