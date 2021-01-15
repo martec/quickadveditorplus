@@ -182,7 +182,13 @@ Thread.quickQuote = function(pid, username, dateline)
 			var quoteText = "[quote='" + username + "' pid='" + pid + "' dateline='" + dateline + "']\n";
 		}
 
-		quoteText += Thread.domToBB(userSelection, MYBB_SMILIES, sel.getRangeAt(0).commonAncestorContainer, 1);
+		var parentNode = sel.getRangeAt(0).commonAncestorContainer;
+		while (typeof parentNode.tagName == "undefined") {
+			if (parentNode.parentNode) {
+				parentNode = parentNode.parentNode;
+			} else	break;
+		}
+		quoteText += Thread.domToBB(userSelection, MYBB_SMILIES, parentNode, 1);
 		quoteText += "\n[/quote]\n";
 
 		delete userSelection;
@@ -290,6 +296,8 @@ Thread.domToBB = function(domEl, smilies, parentNode, depth)
 						newSpan.style.display = 'none';
 						parentNode.appendChild(newSpan);
 						output += Thread.textNodeSpanToBB(newSpan);
+						newSpan.removeChild(clonedNode);
+						parentNode.removeChild(newSpan);
 					} else {
 						output += childNode.data.replace(/[\n\t]+/,'');
 					}
@@ -447,12 +455,6 @@ Thread.domToBB = function(domEl, smilies, parentNode, depth)
 			}
 
 			output += closeTag;
-		}
-
-		if (clonedNode) {
-			newSpan.removeChild(clonedNode);
-			delete clonedNode;
-			parentNode.removeChild(newSpan);
 		}
 	}
 
