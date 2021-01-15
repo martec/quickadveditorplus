@@ -173,14 +173,22 @@ function quick_quote(pid, username, dateline) {
 Thread.quickQuote = function(pid, username, dateline)
 {
 	if(isWebkit || window.getSelection().toString().trim()) {
-		userSelection = window.getSelection().getRangeAt(0).cloneContents();
+		var sel = window.getSelection();
+		var userSelection = sel.getRangeAt(0).cloneContents();
 		if (parseInt(rinvbquote)) {
 			var	quoteText = "[quote="+username+";"+pid+"]\n";
 		}
 		else {
 			var quoteText = "[quote='" + username + "' pid='" + pid + "' dateline='" + dateline + "']\n";
 		}
-		quoteText += Thread.domToBB(userSelection , MYBB_SMILIES);
+
+		var parentNode = sel.getRangeAt(0).commonAncestorContainer;
+		while (typeof parentNode.tagName == "undefined") {
+			if (parentNode.parentNode) {
+				parentNode = parentNode.parentNode;
+			} else	break;
+		}
+		quoteText += Thread.domToBB(userSelection, MYBB_SMILIES, parentNode, 1);
 		quoteText += "\n[/quote]\n";
 
 		delete userSelection;
@@ -212,7 +220,70 @@ Thread.toHex = function(N)
 			+ "0123456789ABCDEF".charAt(N%16);
 }
 
-Thread.domToBB = function(domEl, smilies)
+Thread.textNodeSpanToBB = function(spanEl)
+{
+	var openTag = '';
+	var content = '';
+	var closeTag = '';
+	var compStyles = window.getComputedStyle(spanEl, null);
+
+	if(compStyles.getPropertyValue("text-decoration") == "underline")
+	{
+		openTag = "[u]" + openTag;
+		closeTag = closeTag + "[/u]";
+	}
+	if(compStyles.getPropertyValue("font-weight") > 400 || compStyles.getPropertyValue("font-weight") == "bold")
+	{
+		openTag = "[b]" + openTag;
+		closeTag = closeTag + "[/b]";
+	}
+	if(compStyles.getPropertyValue("font-style") == "italic")
+	{
+		openTag = "[i]" + openTag;
+		closeTag = closeTag + "[/i]";
+	}
+	var colourVal = Thread.normaliseColour(compStyles.getPropertyValue("color"));
+	var post_colour = Thread.normaliseColour($('.post_body').css('color'));
+	if (post_colour != colourVal) {
+		openTag = "[color=" + colourVal + "]" + openTag;
+		closeTag = closeTag + "[/color]";
+	}
+
+	content = spanEl.childNodes[0].data.replace(/[\n\t]+/,'');
+
+	if (content) {
+		return openTag + content + closeTag;
+	} else	return '';
+}
+
+Thread.normaliseColour = function(colourStr) {
+	var match;
+
+	colourStr = colourStr || '#000';
+
+	// rgb(n,n,n);
+	if ((match = colourStr.match(/rgb\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3})\)/i))) {
+		return '#' + Thread.RGBtoHex(match[1], match[2], match[3]);
+	}
+
+	// rgba(n,n,n,f.p);
+	// Strip transparency component (f.p).
+	if ((match = colourStr.match(/rgba\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3}),\s*?(\d*\.?\d+\s*)\)/i))) {
+		return '#' + Thread.RGBtoHex(match[1], match[2], match[3]);
+	}
+
+	// expand shorthand
+	if ((match = colourStr.match(/#([0-f])([0-f])([0-f])\s*?$/i))) {
+		return '#' +
+		       match[1] + match[1] +
+		       match[2] + match[2] +
+		       match[3] + match[3];
+	}
+
+	return colourStr;
+}
+
+Thread.domToBB = function(domEl, smilies, parentNode, depth)
 {
 	var output = "";
 	var childNode;
@@ -226,18 +297,33 @@ Thread.domToBB = function(domEl, smilies)
 		openTag = "";
 		content = "";
 		closeTag = "";
+		var clonedNode = null;
+		var newSpan = null;
 
 		if(typeof childNode.tagName == "undefined")
 		{
 			switch(childNode.nodeName)
 			{
 				case '#text':
-					output += childNode.data.replace(/[\n\t]+/,'');
-				break;
+					if (depth == 1 && typeof parentNode.tagName !== "undefined") {
+						// Add the cloned text node to the document invisibly under
+						// its rightful parent node, so that the call to
+						// window.getComputedStyle() in textNodeSpanToBB() works.
+						newSpan = document.createElement('span');
+						clonedNode = childNode.cloneNode();
+						newSpan.appendChild(clonedNode);
+						newSpan.style.display = 'none';
+						parentNode.appendChild(newSpan);
+						output += Thread.textNodeSpanToBB(newSpan);
+						newSpan.removeChild(clonedNode);
+						parentNode.removeChild(newSpan);
+					} else {
+						output += childNode.data.replace(/[\n\t]+/,'');
+					}
+					break;
 				default:
 					// do nothing
-				break;
-
+					break;
 			}
 		}
 		else
@@ -318,11 +404,11 @@ Thread.domToBB = function(domEl, smilies)
 						case childNode.href.indexOf("mailto:") == 0:
 							openTag = "[email=" + childNode.href.replace("mailto:","") + "]";
 							closeTag = "[/email]";
-						break;
+							break;
 						default:
 							openTag = "[url=" + childNode.href + "]";
 							closeTag = "[/url]";
-						break;
+							break;
 					}
 					break;
 				case "OL":
@@ -374,18 +460,17 @@ Thread.domToBB = function(domEl, smilies)
 					}
 					break;
 				case "P":
-						closeTag = "\n\n";
+					closeTag = "\n\n";
 					break;
 				case "BR":
-						closeTag = "\n"
+					closeTag = "\n"
 					break;
 			}
-
 			output += openTag + content;
 
 			if(content == "" && childNode.childNodes && childNode.childNodes.length > 0)
 			{
-				output += Thread.domToBB(childNode , smilies);
+				output += Thread.domToBB(childNode, smilies, parentNode, depth+1);
 			}
 
 			output += closeTag;
