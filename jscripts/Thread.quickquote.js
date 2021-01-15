@@ -243,7 +243,7 @@ Thread.textNodeSpanToBB = function(spanEl)
 		closeTag = closeTag + "[/i]";
 	}
 	var colourVal = Thread.normaliseColour(compStyles.getPropertyValue("color"));
-	var post_colour = $('.post_body').css('color');
+	var post_colour = Thread.normaliseColour($('.post_body').css('color'));
 	if (post_colour != colourVal) {
 		openTag = "[color=" + colourVal + "]" + openTag;
 		closeTag = closeTag + "[/color]";
