@@ -242,18 +242,12 @@ Thread.textNodeSpanToBB = function(spanEl)
 		openTag = "[i]" + openTag;
 		closeTag = closeTag + "[/i]";
 	}
-	var colourVal = compStyles.getPropertyValue("color");
-	if(colourVal.indexOf('rgb') != -1)
-	{
-		var rgb = colourVal.replace("rgb(","").replace(")","").split(",");
-		var hex = "#"+Thread.RGBtoHex(parseInt(rgb[0]) , parseInt(rgb[1]) , parseInt(rgb[2]));
-	}
-	else
-	{
-		var hex = colourVal;
-	}
-	if (hex) {
-		openTag = "[color=" + hex + "]" + openTag;
+	var colourVal = Thread.normaliseColour(compStyles.getPropertyValue("color"));
+	var iframe = $('.sceditor-container iframe');
+	var editor_body = $('body', iframe.contents());
+	var editor_colour = editor_body ? Thread.normaliseColour(editor_body.css('color')) : '';
+	if (editor_colour != colourVal) {
+		openTag = "[color=" + colourVal + "]" + openTag;
 		closeTag = closeTag + "[/color]";
 	}
 
@@ -262,6 +256,33 @@ Thread.textNodeSpanToBB = function(spanEl)
 	if (content) {
 		return openTag + content + closeTag;
 	} else	return '';
+}
+
+Thread.normaliseColour = function(colourStr) {
+	var match;
+
+	colourStr = colourStr || '#000';
+
+	// rgb(n,n,n);
+	if ((match = colourStr.match(/rgb\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3})\)/i))) {
+		return '#' + Thread.RGBtoHex(match[1], match[2], match[3]);
+	}
+
+	// rgba(n,n,n,f.p);
+	// Strip transparency component (f.p).
+	if ((match = colourStr.match(/rgba\((\d{1,3}),\s*?(\d{1,3}),\s*?(\d{1,3}),\s*?(\d*\.?\d+\s*)\)/i))) {
+		return '#' + Thread.RGBtoHex(match[1], match[2], match[3]);
+	}
+
+	// expand shorthand
+	if ((match = colourStr.match(/#([0-f])([0-f])([0-f])\s*?$/i))) {
+		return '#' +
+		       match[1] + match[1] +
+		       match[2] + match[2] +
+		       match[3] + match[3];
+	}
+
+	return colourStr;
 }
 
 Thread.domToBB = function(domEl, smilies, parentNode, depth)
