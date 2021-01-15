@@ -243,10 +243,8 @@ Thread.textNodeSpanToBB = function(spanEl)
 		closeTag = closeTag + "[/i]";
 	}
 	var colourVal = Thread.normaliseColour(compStyles.getPropertyValue("color"));
-	var iframe = $('.sceditor-container iframe');
-	var editor_body = $('body', iframe.contents());
-	var editor_colour = editor_body ? Thread.normaliseColour(editor_body.css('color')) : '';
-	if (editor_colour != colourVal) {
+	var post_colour = $('.post_body').css('color');
+	if (post_colour != colourVal) {
 		openTag = "[color=" + colourVal + "]" + openTag;
 		closeTag = closeTag + "[/color]";
 	}
