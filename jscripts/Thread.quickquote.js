@@ -182,15 +182,7 @@ Thread.quickQuote = function(pid, username, dateline)
 			var quoteText = "[quote='" + username + "' pid='" + pid + "' dateline='" + dateline + "']\n";
 		}
 
-		var parentNode1 = sel.anchorNode.parentNode;
-		var parentNode2 = sel.focusNode.parentNode;
-		var parentNode = parentNode1.contains(parentNode2) ? parentNode1 : parentNode2;
-		while (sel.containsNode(parentNode)) {
-			if (!parentNode.parentNode) {
-				break;
-			} else	parentNode = parentNode.parentNode;
-		}
-		quoteText += Thread.domToBB(userSelection, MYBB_SMILIES, parentNode, 1);
+		quoteText += Thread.domToBB(userSelection, MYBB_SMILIES, sel.getRangeAt(0).commonAncestorContainer, 1);
 		quoteText += "\n[/quote]\n";
 
 		delete userSelection;
@@ -288,7 +280,7 @@ Thread.domToBB = function(domEl, smilies, parentNode, depth)
 			switch(childNode.nodeName)
 			{
 				case '#text':
-					if (depth == 1) {
+					if (depth == 1 && typeof parentNode.tagName !== "undefined") {
 						// Add the cloned text node to the document invisibly under
 						// its rightful parent node, so that the call to
 						// window.getComputedStyle() in textNodeSpanToBB() works.
